@@ -1,0 +1,38 @@
+line_id,stop_order,node_id,node_name,node_type,lon,lat,schematic_x,schematic_y,stop_status
+FA,1,COA,Coatzacoalcos,terminal,-94.42,18.15,432,68,core
+FA,2,CUI,Cuichapa,station,-94.17,17.98,521,103,core
+FA,3,LCH,Los Chiapas,station,-93.92,17.88,570,121,core
+FA,4,RAY,Roberto Ayala,station,-93.39,17.5,727,172,core
+FA,5,JUA,Juárez,station,-93.24,17.41,820,187,core
+FA,6,TEA,Teapa,station,-92.95,17.55,903,206,core
+FA,7,PSU,Pino Suárez,station,-92.67,17.64,975,187,core
+FA,8,SDA,Salto de Agua,station,-92.34,17.56,1060,192,core
+FA,9,PAK,Pakal Ná,terminal,-92.03,17.49,1150,206,core
+Z,1,COA,Coatzacoalcos,terminal,-94.42,18.15,432,68,core
+Z,2,JAL,Jáltipan,station,-94.71,17.96,331,147,core
+Z,3,MAG,Medias Aguas,station,-95.02,17.72,255,200,core
+Z,4,JCA,Jesús Carranza,station,-95.03,17.43,243,293,core
+Z,5,DON,Donají,station,-95.09,17.23,240,382,core
+Z,6,MOG,Mogoñé,station,-95.09,17.03,240,461,core
+Z,7,MRO,Matías Romero,station,-95.03,16.88,240,535,core
+Z,8,CHI,Chivela,station,-95.1,16.69,236,620,core
+Z,9,IXT,Ixtepec,station,-95.1,16.56,241,693,core
+Z,10,SCR,Salina Cruz,terminal,-95.2,16.17,194,795,core
+K,1,SCR,Salina Cruz,terminal,-95.2,16.17,194,795,core
+K,2,TEH,Tehuantepec,station,-95.24,16.32,152,725,core
+K,3,COM,Comitancillo,station,-95.16,16.48,118,648,core
+K,4,IXT,Ixtepec,station,-95.1,16.56,241,693,core
+K,5,ESP,El Espinal,station,-95.04,16.49,286,650,core
+K,6,JUC,Juchitán,station,-95.02,16.44,333,694,core
+K,7,UHI,Unión Hidalgo,station,-94.83,16.47,412,694,core
+K,8,RPI,Reforma de Pineda,station,-94.46,16.42,501,715,core
+K,9,CHA,Chahuites,station,-94.19,16.29,605,706,core
+K,10,ARR,Arriaga,station,-93.9,16.24,698,752,core
+K,11,TON,Tonalá,terminal,-93.76,16.09,726,845,terminal_primary
+K,12,PIJ,Pijijiapan,station,-93.21,15.69,887,935,extension_low_certainty
+K,13,MAP,Mapastepec,station,-92.9,15.44,965,1006,extension_low_certainty
+K,14,ACA,Acapetahua,station,-92.69,15.28,1031,1063,extension_low_certainty
+K,15,HUI,Huixtla,station,-92.46,15.14,1096,1123,extension_low_certainty
+K,16,AOB,Álvaro Obregón,station,-92.35,14.96,1163,1191,extension_low_certainty
+K,17,LTO,Los Toros,station,-92.25,14.81,1184,1224,extension_low_certainty
+K,18,HID,Cd. Hidalgo,terminal,-92.15,14.68,1227,1260,extension_low_certainty

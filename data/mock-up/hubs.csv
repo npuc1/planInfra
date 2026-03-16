@@ -1,0 +1,23 @@
+hub_id,hub_name,hub_type,state,latitude,longitude,is_port,is_current_active,is_proposed_active,notes,current_activation_year,proposed_activation_year
+H001,Port of Veracruz,port,Veracruz,19.2,-96.14,1,1,1,,2026,2026
+H002,Port of Manzanillo,port,Colima,19.05,-104.32,1,1,1,,2026,2026
+H003,Port of Lázaro Cárdenas,port,Michoacán,17.96,-102.2,1,1,1,,2026,2026
+H004,Port of Altamira,port,Tamaulipas,22.39,-97.94,1,1,1,,2026,2026
+H005,Port of Progreso,port,Yucatán,21.28,-89.66,1,1,1,,2026,2026
+H101,Guadalajara Logistics Hub,rail_hub,Jalisco,20.67,-103.35,0,1,1,,2026,2026
+H102,Celaya Intermodal Hub,rail_hub,Guanajuato,20.53,-100.81,0,1,1,,2026,2026
+H103,Monterrey Rail Hub,rail_hub,Nuevo León,25.68,-100.31,0,1,1,,2026,2026
+H104,Puebla Logistics Hub,rail_hub,Puebla,19.04,-98.2,0,1,1,,2026,2026
+H105,Valle de México Hub,rail_hub,Estado de México,19.29,-99.65,0,1,1,,2026,2026
+H106,Los Mochis Agricultural Hub,rail_hub,Sinaloa,25.79,-108.99,0,1,1,,2026,2026
+H107,Ciudad Obregón Hub,rail_hub,Sonora,27.49,-109.94,0,1,1,,2026,2026
+H108,Tuxtla Agro Hub,rail_hub,Chiapas,16.75,-93.12,0,1,1,Mock southeast node that gains higher relevance after planned rail upgrades.,2026,2027
+H201,Bajío Feed & Milling Cluster,buyer_cluster,Guanajuato,20.53,-100.81,0,1,1,,2026,2026
+H202,Monterrey Food Manufacturing Cluster,buyer_cluster,Nuevo León,25.68,-100.31,0,1,1,,2026,2026
+H203,Valle de México Food Processing Cluster,buyer_cluster,Estado de México,19.43,-99.13,0,1,1,,2026,2026
+H204,Puebla-Tlaxcala Milling Cluster,buyer_cluster,Puebla,19.04,-98.2,0,1,1,,2026,2026
+H205,Occidente Feed Cluster,buyer_cluster,Jalisco,20.67,-103.35,0,1,1,,2026,2026
+H301,Veracruz Storage Cluster,storage_cluster,Veracruz,19.2,-96.14,0,1,1,,2026,2026
+H302,Sinaloa Storage Cluster,storage_cluster,Sinaloa,24.81,-107.39,0,1,1,,2026,2026
+H303,Bajío Storage Cluster,storage_cluster,Guanajuato,20.91,-101.48,0,1,1,,2026,2026
+H304,Sureste Storage Cluster,storage_cluster,Chiapas,16.75,-93.12,0,1,1,Mock southeast storage cluster that expands materially in the proposed scenario.,2026,2028

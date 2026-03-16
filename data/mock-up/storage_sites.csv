@@ -1,0 +1,7 @@
+storage_id,storage_name,hub_id,storage_type,state,latitude,longitude,current_capacity_tons,proposed_capacity_tons,current_utilization_rate,proposed_utilization_rate,current_activation_year,proposed_activation_year
+S001,Veracruz Grain Terminal A,H301,warehouse,Veracruz,19.2,-96.15,280000,420000,0.82,0.74,2026,2026
+S002,Culiacán Silo Complex,H302,silo,Sinaloa,24.81,-107.39,360000,520000,0.88,0.76,2026,2026
+S003,Irapuato Inland Storage,H303,warehouse,Guanajuato,20.67,-101.35,190000,300000,0.79,0.68,2026,2026
+S004,Tuxtla Regional Silo,H304,silo,Chiapas,16.76,-93.13,70000,180000,0.67,0.59,2026,2028
+S005,Progreso Bulk Storage,H005,warehouse,Yucatán,21.29,-89.66,95000,150000,0.73,0.65,2026,2026
+S006,Monterrey Dry Storage,H103,warehouse,Nuevo León,25.69,-100.3,110000,180000,0.84,0.72,2026,2026

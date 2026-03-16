@@ -1,0 +1,4 @@
+line_id,line_name,operator,origin_node_id,origin_name,destination_node_id,destination_name,color_hex,line_status,phase_note,certainty
+FA,Línea FA,Ferrocarril Interoceánico,COA,Coatzacoalcos,PAK,Pakal Ná,#7d1d45,schematic_from_image,Use as schematic corridor extracted from image,medium
+Z,Línea Z,Ferrocarril Interoceánico,COA,Coatzacoalcos,SCR,Salina Cruz,#0b4f57,schematic_from_image,Use as schematic corridor extracted from image,high
+K,Línea K,Ferrocarril Interoceánico,SCR,Salina Cruz,HID,Cd. Hidalgo,#b27a1f,schematic_from_image,Image subtitle highlights Tonalá as main terminal; segments beyond Tonalá flagged as extension_low_certainty,medium

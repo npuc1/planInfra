@@ -1,0 +1,37 @@
+node_id,node_name,node_type,latitude,longitude,source_note
+MXL,Mexicali,city,32.6245,-115.4523,Named on source image
+NOG,Nogales,border_city,31.3012,-110.9381,Named on source image
+HER,Hermosillo,city,29.0892,-110.9613,Named on source image
+GMS,Guaymas,port,27.9193,-110.8976,Named on source image
+TBL,Topolobampo,port,25.6,-109.05,Named on source image
+CUL,Culiacán,city,24.8091,-107.394,Named on source image
+MZT,Mazatlán,port,23.2494,-106.4111,Named on source image
+TEP,Tepic,city,21.5061,-104.894,Named on source image
+GDL,Guadalajara,city,20.6736,-103.344,Named on source image
+MNZ,Manzanillo,port,19.0501,-104.3188,Named on source image
+CJS,Cd. Juárez,border_city,31.6904,-106.4245,Named on source image
+CUU,Chihuahua,city,28.6353,-106.0889,Named on source image
+OJI,Ojinaga,border_city,29.5667,-104.4167,Named on source image
+PNG,Piedras Negras,border_city,28.7,-100.5231,Named on source image
+FTR,Cd. Frontera,city,26.9281,-101.4521,Named on source image
+TRC,Torreón,city,25.5428,-103.4068,Named on source image
+MTY,Monterrey,city,25.6866,-100.3161,Named on source image
+ATM,Altamira,port,22.392,-97.9381,Named on source image
+TAM,Tampico,port,22.216,-97.857,Named on source image
+ZCL,Zacatecas,city,22.7709,-102.5832,Named on source image
+AGS,Aguascalientes,city,21.8853,-102.2916,Named on source image
+SIL,Silao,city,20.9436,-101.427,Named on source image
+IRA,Irapuato,city,20.6767,-101.3563,Named on source image
+PNJ,Pénjamo,city,20.4311,-101.7222,Named on source image
+CDMX,CDMX,city,19.4326,-99.1332,Named on source image
+PUE,Puebla,city,19.0414,-98.2063,Named on source image
+VER,Veracruz,port,19.1738,-96.1342,Named on source image
+COA,Coatzacoalcos,port,18.1345,-94.4586,Named on source image
+SCZ,Salina Cruz,port,16.167,-95.2,Named on source image
+DPN,DP_Norte_Jct,junction,24.95,-102.35,Synthetic junction approximated from unlabeled Derechos de Paso segment
+DPC,DP_Centro_Jct,junction,22.95,-101.0,Synthetic junction approximated from unlabeled Derechos de Paso segment
+FSO,Ferrosur_Oriente_Jct,junction,18.85,-97.3,Synthetic junction approximated from unlabeled Ferrosur split east of Puebla
+CMT,CM_Tabasco_Jct,junction,17.95,-93.2,Synthetic junction approximated from unlabeled Chiapas Mayab segment
+CMC,CM_Central_Chiapas_Jct,junction,16.9,-92.7,Synthetic junction approximated from unlabeled Chiapas Mayab segment
+CMY,CM_Yucatan_Jct,junction,20.97,-89.62,Synthetic junction approximated from unlabeled Chiapas Mayab segment
+CMQ,CM_QRoo_Jct,junction,18.5,-88.3,Synthetic junction approximated from unlabeled Chiapas Mayab segment

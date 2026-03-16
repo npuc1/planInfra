@@ -1,0 +1,46 @@
+segment_id,operator_id,route_group,from_node_id,to_node_id,segment_order,scenario,status,geometry_type,notes
+FMX_001,FMX,Ferromex Pacífico Norte,MXL,NOG,1,current,active,schematic,Named endpoints; border-adjacent segment kept only on Mexican side
+FMX_002,FMX,Ferromex Pacífico Norte,NOG,HER,2,current,active,schematic,
+FMX_003,FMX,Ferromex Pacífico Norte,HER,GMS,3,current,active,schematic,Port spur
+FMX_004,FMX,Ferromex Pacífico Norte,HER,TBL,4,current,active,schematic,Simplified from inland bend visible in image
+FMX_005,FMX,Ferromex Pacífico Norte,TBL,CUL,5,current,active,schematic,
+FMX_006,FMX,Ferromex Pacífico Norte,CUL,MZT,6,current,active,schematic,
+FMX_007,FMX,Ferromex Pacífico Norte,MZT,TEP,7,current,active,schematic,
+FMX_008,FMX,Ferromex Occidente,TEP,GDL,8,current,active,schematic,
+FMX_009,FMX,Ferromex Occidente,GDL,MNZ,9,current,active,schematic,Port spur
+FMX_010,FMX,Ferromex Bajío,GDL,PNJ,10,current,active,schematic,
+FMX_011,FMX,Ferromex Bajío,PNJ,IRA,11,current,active,schematic,
+FMX_012,FMX,Ferromex Bajío,PNJ,SIL,12,current,active,schematic,
+FMX_013,FMX,Ferromex Bajío-Norte,SIL,AGS,13,current,active,schematic,
+FMX_014,FMX,Ferromex Bajío-Norte,AGS,ZCL,14,current,active,schematic,
+FMX_015,FMX,Ferromex Bajío-Norte,ZCL,TRC,15,current,active,schematic,
+FMX_016,FMX,Ferromex Norte,TRC,CUU,16,current,active,schematic,
+FMX_017,FMX,Ferromex Frontera,CUU,CJS,17,current,active,schematic,
+FMX_018,FMX,Ferromex Frontera,CUU,OJI,18,current,active,schematic,
+FMX_019,FMX,Ferromex Frontera,CUU,PNG,19,current,active,schematic,Diagonal link as shown in source image
+FMX_020,FMX,Ferromex Frontera,PNG,FTR,20,current,active,schematic,
+FMX_021,FMX,Ferromex Noreste,FTR,MTY,21,current,active,schematic,
+FMX_022,FMX,Ferromex Noreste,TRC,MTY,22,current,active,schematic,
+FMX_023,FMX,Ferromex Golfo,MTY,ATM,23,current,active,schematic,
+FMX_024,FMX,Ferromex Golfo,ATM,TAM,24,current,active,schematic,Short port connector
+FMX_025,FMX,Ferromex Centro,PNJ,CDMX,25,current,active,schematic,
+FMX_026,FMX,Ferromex Transversal Norte,CUL,CUU,26,current,active,schematic,Long diagonal corridor simplified from image
+FSR_001,FSR,Ferrosur Centro-Oriente,CDMX,PUE,1,current,active,schematic,
+FSR_002,FSR,Ferrosur Centro-Oriente,PUE,FSO,2,current,active,schematic,Synthetic split node to preserve three-pronged Ferrosur geometry
+FSR_003,FSR,Ferrosur Golfo,FSO,VER,3,current,active,schematic,
+FSR_004,FSR,Ferrosur Istmo,FSO,COA,4,current,active,schematic,
+FSR_005,FSR,Ferrosur Centro-Golfo,CDMX,VER,5,current,active,schematic,Simplified direct corridor visible in image
+FSR_006,FSR,Ferrosur Centro-Istmo,CDMX,FSO,6,current,active,schematic,
+DP_001,DP,Derechos de Paso Norte,TRC,DPN,1,current,active,schematic,Synthetic corridor from source image
+DP_002,DP,Derechos de Paso Norte,DPN,FTR,2,current,active,schematic,
+DP_003,DP,Derechos de Paso Centro,DPN,ZCL,3,current,active,schematic,
+DP_004,DP,Derechos de Paso Centro,DPN,DPC,4,current,active,schematic,
+DP_005,DP,Derechos de Paso Centro,DPC,IRA,5,current,active,schematic,
+DP_006,DP,Derechos de Paso Golfo,DPC,ATM,6,current,active,schematic,
+DP_007,DP,Derechos de Paso Golfo,DPC,TAM,7,current,active,schematic,
+CM_001,CM,Chiapas Mayab Istmo,COA,SCZ,1,current,active,schematic,Main Isthmus corridor
+CM_002,CM,Chiapas Mayab Sureste,COA,CMT,2,current,active,schematic,
+CM_003,CM,Chiapas Mayab Sureste,CMT,CMC,3,current,active,schematic,
+CM_004,CM,Chiapas Mayab Sureste,CMC,SCZ,4,current,active,schematic,Southern return link approximated from image
+CM_005,CM,Chiapas Mayab Península,CMT,CMY,5,current,active,schematic,
+CM_006,CM,Chiapas Mayab Península,CMY,CMQ,6,current,active,schematic,

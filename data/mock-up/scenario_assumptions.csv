@@ -1,0 +1,8 @@
+scenario,year,assumption_key,assumption_description,status
+current,2026,baseline_network,Current network follows existing logistics conditions as the baseline path.,placeholder
+current,2028,baseline_constraints,Baseline path assumes no major rail reconfiguration or major storage step-change.,placeholder
+current,2030,baseline_capacity,Baseline path reflects only modest operational efficiency gains by 2030.,placeholder
+proposed,2027,phase_1_rail,Early intervention phase: initial rail service upgrades start capturing long-haul grain flows.,placeholder
+proposed,2028,phase_2_storage,Mid intervention phase: inland storage and southeast capacity expansions begin to enter service.,placeholder
+proposed,2029,phase_3_ports,Port regulation and scheduling improvements reduce friction in selected grain corridors.,placeholder
+proposed,2030,phase_4_mature_network,By 2030 the mock proposed network reaches full target routing and capacity assumptions.,placeholder

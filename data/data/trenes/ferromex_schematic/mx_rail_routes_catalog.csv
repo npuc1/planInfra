@@ -1,0 +1,5 @@
+operator_id,operator_name,color_placeholder,notes
+FMX,Ferromex,#ff4d4d,Main red network extracted from source image; U.S. segments excluded
+FSR,Ferrosur,#b7b31a,Yellow-green central/eastern network extracted from source image; schematic
+DP,Derechos de Paso,#7fdde3,Light-cyan rights-of-way segments extracted schematically from source image
+CM,Chiapas Mayab,#73e1c8,Turquoise southeast network extracted schematically from source image

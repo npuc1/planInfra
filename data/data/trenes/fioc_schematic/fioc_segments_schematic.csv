@@ -1,0 +1,35 @@
+segment_id,line_id,segment_order,from_node_id,from_node_name,to_node_id,to_node_name,from_lon,from_lat,to_lon,to_lat,from_schematic_x,from_schematic_y,to_schematic_x,to_schematic_y,segment_status,geometry_kind,notes
+FA_01,FA,1,COA,Coatzacoalcos,CUI,Cuichapa,-94.42,18.15,-94.17,17.98,432,68,521,103,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+FA_02,FA,2,CUI,Cuichapa,LCH,Los Chiapas,-94.17,17.98,-93.92,17.88,521,103,570,121,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+FA_03,FA,3,LCH,Los Chiapas,RAY,Roberto Ayala,-93.92,17.88,-93.39,17.5,570,121,727,172,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+FA_04,FA,4,RAY,Roberto Ayala,JUA,Juárez,-93.39,17.5,-93.24,17.41,727,172,820,187,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+FA_05,FA,5,JUA,Juárez,TEA,Teapa,-93.24,17.41,-92.95,17.55,820,187,903,206,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+FA_06,FA,6,TEA,Teapa,PSU,Pino Suárez,-92.95,17.55,-92.67,17.64,903,206,975,187,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+FA_07,FA,7,PSU,Pino Suárez,SDA,Salto de Agua,-92.67,17.64,-92.34,17.56,975,187,1060,192,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+FA_08,FA,8,SDA,Salto de Agua,PAK,Pakal Ná,-92.34,17.56,-92.03,17.49,1060,192,1150,206,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_01,Z,1,COA,Coatzacoalcos,JAL,Jáltipan,-94.42,18.15,-94.71,17.96,432,68,331,147,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_02,Z,2,JAL,Jáltipan,MAG,Medias Aguas,-94.71,17.96,-95.02,17.72,331,147,255,200,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_03,Z,3,MAG,Medias Aguas,JCA,Jesús Carranza,-95.02,17.72,-95.03,17.43,255,200,243,293,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_04,Z,4,JCA,Jesús Carranza,DON,Donají,-95.03,17.43,-95.09,17.23,243,293,240,382,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_05,Z,5,DON,Donají,MOG,Mogoñé,-95.09,17.23,-95.09,17.03,240,382,240,461,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_06,Z,6,MOG,Mogoñé,MRO,Matías Romero,-95.09,17.03,-95.03,16.88,240,461,240,535,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_07,Z,7,MRO,Matías Romero,CHI,Chivela,-95.03,16.88,-95.1,16.69,240,535,236,620,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_08,Z,8,CHI,Chivela,IXT,Ixtepec,-95.1,16.69,-95.1,16.56,236,620,241,693,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+Z_09,Z,9,IXT,Ixtepec,SCR,Salina Cruz,-95.1,16.56,-95.2,16.17,241,693,194,795,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_01,K,1,SCR,Salina Cruz,TEH,Tehuantepec,-95.2,16.17,-95.24,16.32,194,795,152,725,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_02,K,2,TEH,Tehuantepec,COM,Comitancillo,-95.24,16.32,-95.16,16.48,152,725,118,648,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_03,K,3,COM,Comitancillo,IXT,Ixtepec,-95.16,16.48,-95.1,16.56,118,648,241,693,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_04,K,4,IXT,Ixtepec,ESP,El Espinal,-95.1,16.56,-95.04,16.49,241,693,286,650,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_05,K,5,ESP,El Espinal,JUC,Juchitán,-95.04,16.49,-95.02,16.44,286,650,333,694,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_06,K,6,JUC,Juchitán,UHI,Unión Hidalgo,-95.02,16.44,-94.83,16.47,333,694,412,694,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_07,K,7,UHI,Unión Hidalgo,RPI,Reforma de Pineda,-94.83,16.47,-94.46,16.42,412,694,501,715,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_08,K,8,RPI,Reforma de Pineda,CHA,Chahuites,-94.46,16.42,-94.19,16.29,501,715,605,706,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_09,K,9,CHA,Chahuites,ARR,Arriaga,-94.19,16.29,-93.9,16.24,605,706,698,752,core,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_10,K,10,ARR,Arriaga,TON,Tonalá,-93.9,16.24,-93.76,16.09,698,752,726,845,core_to_primary_terminal,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_11,K,11,TON,Tonalá,PIJ,Pijijiapan,-93.76,16.09,-93.21,15.69,726,845,887,935,extension_low_certainty,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_12,K,12,PIJ,Pijijiapan,MAP,Mapastepec,-93.21,15.69,-92.9,15.44,887,935,965,1006,extension_low_certainty,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_13,K,13,MAP,Mapastepec,ACA,Acapetahua,-92.9,15.44,-92.69,15.28,965,1006,1031,1063,extension_low_certainty,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_14,K,14,ACA,Acapetahua,HUI,Huixtla,-92.69,15.28,-92.46,15.14,1031,1063,1096,1123,extension_low_certainty,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_15,K,15,HUI,Huixtla,AOB,Álvaro Obregón,-92.46,15.14,-92.35,14.96,1096,1123,1163,1191,extension_low_certainty,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_16,K,16,AOB,Álvaro Obregón,LTO,Los Toros,-92.35,14.96,-92.25,14.81,1163,1191,1184,1224,extension_low_certainty,schematic_polyline_from_ordered_stops,Approximate segment derived from route image
+K_17,K,17,LTO,Los Toros,HID,Cd. Hidalgo,-92.25,14.81,-92.15,14.68,1184,1224,1227,1260,extension_low_certainty,schematic_polyline_from_ordered_stops,Approximate segment derived from route image

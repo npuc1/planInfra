@@ -1,0 +1,7 @@
+buyer_id,buyer_name,hub_id,sector,primary_commodity,current_annual_purchase_tons,proposed_annual_purchase_tons,importance_band,current_activation_year,proposed_activation_year
+B001,Bajío Feeds SA de CV,H201,animal_feed,maize,420000,560000,high,2026,2026
+B002,Molinos del Centro,H204,milling,wheat,310000,380000,medium,2026,2026
+B003,Alimentos Metropolitanos,H203,food_processing,maize,510000,640000,high,2026,2026
+B004,Proteínas del Norte,H202,animal_feed,maize,390000,520000,high,2026,2026
+B005,Occidente Ingredientes,H205,food_processing,beans,85000,110000,medium,2026,2026
+B006,Arroces del Golfo,H301,rice_processing,rice,120000,160000,medium,2026,2026

@@ -1,0 +1,35 @@
+node_id,node_name,state,node_type,lon,lat,schematic_x,schematic_y,notes
+COA,Coatzacoalcos,Veracruz,terminal,-94.42,18.15,432,68,Shared terminal for FA and Z
+CUI,Cuichapa,Veracruz/Tabasco,station,-94.17,17.98,521,103,Image label slightly unclear; verify exact official station name
+LCH,Los Chiapas,Tabasco,station,-93.92,17.88,570,121,
+RAY,Roberto Ayala,Tabasco,station,-93.39,17.5,727,172,
+JUA,Juárez,Tabasco,station,-93.24,17.41,820,187,"Likely Juárez, Tabasco"
+TEA,Teapa,Tabasco,station,-92.95,17.55,903,206,
+PSU,Pino Suárez,Tabasco,station,-92.67,17.64,975,187,
+SDA,Salto de Agua,Chiapas,station,-92.34,17.56,1060,192,
+PAK,Pakal Ná,Chiapas,terminal,-92.03,17.49,1150,206,Approximate position near Palenque / Pakal Ná area
+JAL,Jáltipan,Veracruz,station,-94.71,17.96,331,147,
+MAG,Medias Aguas,Veracruz,station,-95.02,17.72,255,200,
+JCA,Jesús Carranza,Veracruz,station,-95.03,17.43,243,293,
+DON,Donají,Oaxaca,station,-95.09,17.23,240,382,
+MOG,Mogoñé,Oaxaca,station,-95.09,17.03,240,461,Approximate spelling; verify official accentuation
+MRO,Matías Romero,Oaxaca,station,-95.03,16.88,240,535,
+CHI,Chivela,Oaxaca,station,-95.1,16.69,236,620,
+IXT,Ixtepec,Oaxaca,station,-95.1,16.56,241,693,Shared station for Z and K
+SCR,Salina Cruz,Oaxaca,terminal,-95.2,16.17,194,795,Shared terminal for Z and K
+TEH,Tehuantepec,Oaxaca,station,-95.24,16.32,152,725,
+COM,Comitancillo,Oaxaca,station,-95.16,16.48,118,648,"Approximate placement, schematic"
+ESP,El Espinal,Oaxaca,station,-95.04,16.49,286,650,
+JUC,Juchitán,Oaxaca,station,-95.02,16.44,333,694,
+UHI,Unión Hidalgo,Oaxaca,station,-94.83,16.47,412,694,
+RPI,Reforma de Pineda,Oaxaca,station,-94.46,16.42,501,715,Label appears faded in legend
+CHA,Chahuites,Oaxaca,station,-94.19,16.29,605,706,
+ARR,Arriaga,Chiapas,station,-93.9,16.24,698,752,
+TON,Tonalá,Chiapas,terminal,-93.76,16.09,726,845,Image subtitle names Tonalá as K terminal; route drawing continues beyond as lower-certainty extension
+PIJ,Pijijiapan,Chiapas,station,-93.21,15.69,887,935,Shown after Tonalá on route map; treated as extension/continuation
+MAP,Mapastepec,Chiapas,station,-92.9,15.44,965,1006,
+ACA,Acapetahua,Chiapas,station,-92.69,15.28,1031,1063,Image label may appear as Acacoyagua/Acapetahua; verify official stop name
+HUI,Huixtla,Chiapas,station,-92.46,15.14,1096,1123,
+AOB,Álvaro Obregón,Chiapas,station,-92.35,14.96,1163,1191,
+LTO,Los Toros,Chiapas,station,-92.25,14.81,1184,1224,
+HID,Cd. Hidalgo,Chiapas,terminal,-92.15,14.68,1227,1260,Shown as far southeast terminal on the route map

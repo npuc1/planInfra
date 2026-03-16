@@ -1,0 +1,133 @@
+route_id,scenario,commodity,transport_mode,vertex_order,longitude,latitude,point_type,point_name_placeholder,line_name,line_code,line_color_placeholder,line_width_px_placeholder,render_geometry_kind
+R001,current,maize,rail,1,-108.99,25.79,origin,Los Mochis Agricultural Hub,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+R001,current,maize,rail,2,-108.55,25.58,bend,R001 bend 1,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+R001,current,maize,rail,3,-108.0,25.2,bend,R001 bend 2,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+R001,current,maize,rail,4,-107.39,24.81,destination,Sinaloa Storage Cluster,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+R002,current,maize,rail,1,-107.39,24.81,origin,Sinaloa Storage Cluster,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+R002,current,maize,rail,2,-106.75,24.2,bend,R002 bend 1,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+R002,current,maize,rail,3,-105.85,23.35,bend,R002 bend 2,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+R002,current,maize,rail,4,-104.7,22.35,bend,R002 bend 3,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+R002,current,maize,rail,5,-103.25,21.45,bend,R002 bend 4,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+R002,current,maize,rail,6,-101.95,20.9,bend,R002 bend 5,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+R002,current,maize,rail,7,-100.81,20.53,destination,Bajío Feed & Milling Cluster,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+R003,current,maize,rail,1,-107.39,24.81,origin,Sinaloa Storage Cluster,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+R003,current,maize,rail,2,-106.55,24.1,bend,R003 bend 1,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+R003,current,maize,rail,3,-105.5,23.2,bend,R003 bend 2,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+R003,current,maize,rail,4,-104.55,22.2,bend,R003 bend 3,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+R003,current,maize,rail,5,-103.85,21.35,bend,R003 bend 4,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+R003,current,maize,rail,6,-103.35,20.67,destination,Occidente Feed Cluster,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+R004,current,wheat,truck,1,-96.14,19.2,origin,Port of Veracruz,Wheat Corridor F004,L-F004,[LINE_COLOR],2,simple_line
+R004,current,wheat,truck,2,-98.2,19.04,destination,Puebla Logistics Hub,Wheat Corridor F004,L-F004,[LINE_COLOR],2,simple_line
+R005,current,wheat,truck,1,-97.94,22.39,origin,Port of Altamira,Wheat Corridor F005,L-F005,[LINE_COLOR],2,simple_line
+R005,current,wheat,truck,2,-100.31,25.68,destination,Monterrey Rail Hub,Wheat Corridor F005,L-F005,[LINE_COLOR],2,simple_line
+R006,current,beans,truck,1,-93.12,16.75,origin,Tuxtla Agro Hub,Beans Corridor F006,L-F006,[LINE_COLOR],2,simple_line
+R006,current,beans,truck,2,-101.48,20.91,destination,Bajío Storage Cluster,Beans Corridor F006,L-F006,[LINE_COLOR],2,simple_line
+R007,current,rice,short_haul,1,-96.14,19.2,origin,Port of Veracruz,Rice Corridor F007,L-F007,[LINE_COLOR],2,simple_line
+R007,current,rice,short_haul,2,-96.14,19.2,destination,Veracruz Storage Cluster,Rice Corridor F007,L-F007,[LINE_COLOR],2,simple_line
+R008,current,rice,truck,1,-96.14,19.2,origin,Veracruz Storage Cluster,Rice Corridor F008,L-F008,[LINE_COLOR],2,simple_line
+R008,current,rice,truck,2,-99.13,19.43,destination,Valle de México Food Processing Cluster,Rice Corridor F008,L-F008,[LINE_COLOR],2,simple_line
+R009,current,maize,rail,1,-102.2,17.96,origin,Port of Lázaro Cárdenas,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+R009,current,maize,rail,2,-102.45,18.7,bend,R009 bend 1,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+R009,current,maize,rail,3,-102.85,19.45,bend,R009 bend 2,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+R009,current,maize,rail,4,-103.2,20.05,bend,R009 bend 3,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+R009,current,maize,rail,5,-103.35,20.67,destination,Guadalajara Logistics Hub,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+R010,current,beans,truck,1,-108.99,25.79,origin,Los Mochis Agricultural Hub,Beans Corridor F010,L-F010,[LINE_COLOR],2,simple_line
+R010,current,beans,truck,2,-99.13,19.43,destination,Valle de México Food Processing Cluster,Beans Corridor F010,L-F010,[LINE_COLOR],2,simple_line
+RP001,proposed,maize,rail,1,-108.99,25.79,origin,Los Mochis Agricultural Hub,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+RP001,proposed,maize,rail,2,-108.55,25.58,bend,RP001 bend 1,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+RP001,proposed,maize,rail,3,-108.0,25.2,bend,RP001 bend 2,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+RP001,proposed,maize,rail,4,-107.39,24.81,destination,Sinaloa Storage Cluster,Maize Corridor F001,L-F001,[LINE_COLOR],4,schematic_polyline
+RP002,proposed,maize,rail,1,-107.39,24.81,origin,Sinaloa Storage Cluster,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+RP002,proposed,maize,rail,2,-106.75,24.2,bend,RP002 bend 1,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+RP002,proposed,maize,rail,3,-105.85,23.35,bend,RP002 bend 2,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+RP002,proposed,maize,rail,4,-104.7,22.35,bend,RP002 bend 3,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+RP002,proposed,maize,rail,5,-103.25,21.45,bend,RP002 bend 4,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+RP002,proposed,maize,rail,6,-101.95,20.9,bend,RP002 bend 5,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+RP002,proposed,maize,rail,7,-100.81,20.53,destination,Bajío Feed & Milling Cluster,Maize Corridor F002,L-F002,[LINE_COLOR],4,schematic_polyline
+RP003,proposed,maize,rail,1,-107.39,24.81,origin,Sinaloa Storage Cluster,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+RP003,proposed,maize,rail,2,-106.55,24.1,bend,RP003 bend 1,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+RP003,proposed,maize,rail,3,-105.5,23.2,bend,RP003 bend 2,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+RP003,proposed,maize,rail,4,-104.55,22.2,bend,RP003 bend 3,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+RP003,proposed,maize,rail,5,-103.85,21.35,bend,RP003 bend 4,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+RP003,proposed,maize,rail,6,-103.35,20.67,destination,Occidente Feed Cluster,Maize Corridor F003,L-F003,[LINE_COLOR],4,schematic_polyline
+RP004,proposed,wheat,truck,1,-96.14,19.2,origin,Port of Veracruz,Wheat Corridor F004,L-F004,[LINE_COLOR],2,simple_line
+RP004,proposed,wheat,truck,2,-98.2,19.04,destination,Puebla Logistics Hub,Wheat Corridor F004,L-F004,[LINE_COLOR],2,simple_line
+RP005,proposed,wheat,truck,1,-97.94,22.39,origin,Port of Altamira,Wheat Corridor F005,L-F005,[LINE_COLOR],2,simple_line
+RP005,proposed,wheat,truck,2,-100.31,25.68,destination,Monterrey Rail Hub,Wheat Corridor F005,L-F005,[LINE_COLOR],2,simple_line
+RP006,proposed,beans,truck,1,-93.12,16.75,origin,Tuxtla Agro Hub,Beans Corridor F006,L-F006,[LINE_COLOR],2,simple_line
+RP006,proposed,beans,truck,2,-101.48,20.91,destination,Bajío Storage Cluster,Beans Corridor F006,L-F006,[LINE_COLOR],2,simple_line
+RP007,proposed,rice,short_haul,1,-96.14,19.2,origin,Port of Veracruz,Rice Corridor F007,L-F007,[LINE_COLOR],2,simple_line
+RP007,proposed,rice,short_haul,2,-96.14,19.2,destination,Veracruz Storage Cluster,Rice Corridor F007,L-F007,[LINE_COLOR],2,simple_line
+RP008,proposed,rice,truck,1,-96.14,19.2,origin,Veracruz Storage Cluster,Rice Corridor F008,L-F008,[LINE_COLOR],2,simple_line
+RP008,proposed,rice,truck,2,-99.13,19.43,destination,Valle de México Food Processing Cluster,Rice Corridor F008,L-F008,[LINE_COLOR],2,simple_line
+RP009,proposed,maize,rail,1,-102.2,17.96,origin,Port of Lázaro Cárdenas,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+RP009,proposed,maize,rail,2,-102.45,18.7,bend,RP009 bend 1,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+RP009,proposed,maize,rail,3,-102.85,19.45,bend,RP009 bend 2,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+RP009,proposed,maize,rail,4,-103.2,20.05,bend,RP009 bend 3,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+RP009,proposed,maize,rail,5,-103.35,20.67,destination,Guadalajara Logistics Hub,Maize Corridor F009,L-F009,[LINE_COLOR],4,schematic_polyline
+RP010,proposed,beans,truck,1,-108.99,25.79,origin,Los Mochis Agricultural Hub,Beans Corridor F010,L-F010,[LINE_COLOR],2,simple_line
+RP010,proposed,beans,truck,2,-99.13,19.43,destination,Valle de México Food Processing Cluster,Beans Corridor F010,L-F010,[LINE_COLOR],2,simple_line
+R101,proposed,maize,rail,1,-108.99,25.79,origin,Los Mochis Agricultural Hub,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R101,proposed,maize,rail,2,-108.2,25.32,bend,R101 bend 1,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R101,proposed,maize,rail,3,-107.39,24.81,bend,R101 bend 2,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R101,proposed,maize,rail,4,-106.1,23.75,bend,R101 bend 3,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R101,proposed,maize,rail,5,-104.65,22.55,bend,R101 bend 4,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R101,proposed,maize,rail,6,-103.2,21.45,bend,R101 bend 5,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R101,proposed,maize,rail,7,-101.8,20.9,bend,R101 bend 6,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R101,proposed,maize,rail,8,-100.81,20.53,destination,Bajío Feed & Milling Cluster,Maize Corridor F01,L-F01,[LINE_COLOR],4,schematic_polyline
+R102,proposed,maize,rail,1,-108.99,25.79,origin,Los Mochis Agricultural Hub,Maize Corridor F02,L-F02,[LINE_COLOR],4,schematic_polyline
+R102,proposed,maize,rail,2,-108.15,25.25,bend,R102 bend 1,Maize Corridor F02,L-F02,[LINE_COLOR],4,schematic_polyline
+R102,proposed,maize,rail,3,-107.1,24.45,bend,R102 bend 2,Maize Corridor F02,L-F02,[LINE_COLOR],4,schematic_polyline
+R102,proposed,maize,rail,4,-105.95,23.45,bend,R102 bend 3,Maize Corridor F02,L-F02,[LINE_COLOR],4,schematic_polyline
+R102,proposed,maize,rail,5,-104.85,22.35,bend,R102 bend 4,Maize Corridor F02,L-F02,[LINE_COLOR],4,schematic_polyline
+R102,proposed,maize,rail,6,-103.95,21.45,bend,R102 bend 5,Maize Corridor F02,L-F02,[LINE_COLOR],4,schematic_polyline
+R102,proposed,maize,rail,7,-103.35,20.67,destination,Occidente Feed Cluster,Maize Corridor F02,L-F02,[LINE_COLOR],4,schematic_polyline
+R103,proposed,wheat,rail,1,-96.14,19.2,origin,Port of Veracruz,Wheat Corridor F03,L-F03,[LINE_COLOR],4,schematic_polyline
+R103,proposed,wheat,rail,2,-96.55,19.28,bend,R103 bend 1,Wheat Corridor F03,L-F03,[LINE_COLOR],4,schematic_polyline
+R103,proposed,wheat,rail,3,-97.1,19.29,bend,R103 bend 2,Wheat Corridor F03,L-F03,[LINE_COLOR],4,schematic_polyline
+R103,proposed,wheat,rail,4,-97.7,19.2,bend,R103 bend 3,Wheat Corridor F03,L-F03,[LINE_COLOR],4,schematic_polyline
+R103,proposed,wheat,rail,5,-98.2,19.04,destination,Puebla Logistics Hub,Wheat Corridor F03,L-F03,[LINE_COLOR],4,schematic_polyline
+R104,proposed,wheat,rail,1,-97.94,22.39,origin,Port of Altamira,Wheat Corridor F04,L-F04,[LINE_COLOR],4,schematic_polyline
+R104,proposed,wheat,rail,2,-98.45,22.86,bend,R104 bend 1,Wheat Corridor F04,L-F04,[LINE_COLOR],4,schematic_polyline
+R104,proposed,wheat,rail,3,-99.05,23.55,bend,R104 bend 2,Wheat Corridor F04,L-F04,[LINE_COLOR],4,schematic_polyline
+R104,proposed,wheat,rail,4,-99.6,24.2,bend,R104 bend 3,Wheat Corridor F04,L-F04,[LINE_COLOR],4,schematic_polyline
+R104,proposed,wheat,rail,5,-100.0,24.95,bend,R104 bend 4,Wheat Corridor F04,L-F04,[LINE_COLOR],4,schematic_polyline
+R104,proposed,wheat,rail,6,-100.31,25.68,destination,Monterrey Rail Hub,Wheat Corridor F04,L-F04,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,1,-93.12,16.75,origin,Tuxtla Agro Hub,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,2,-94.0,17.2,bend,R105 bend 1,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,3,-95.15,17.75,bend,R105 bend 2,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,4,-96.35,18.35,bend,R105 bend 3,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,5,-97.5,19.0,bend,R105 bend 4,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,6,-98.7,19.45,bend,R105 bend 5,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,7,-100.0,20.05,bend,R105 bend 6,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R105,proposed,beans,rail,8,-101.48,20.91,destination,Bajío Storage Cluster,Beans Corridor F05,L-F05,[LINE_COLOR],4,schematic_polyline
+R106,proposed,rice,rail,1,-96.14,19.2,origin,Port of Veracruz,Rice Corridor F06,L-F06,[LINE_COLOR],4,schematic_polyline
+R106,proposed,rice,rail,2,-96.8,19.26,bend,R106 bend 1,Rice Corridor F06,L-F06,[LINE_COLOR],4,schematic_polyline
+R106,proposed,rice,rail,3,-97.55,19.31,bend,R106 bend 2,Rice Corridor F06,L-F06,[LINE_COLOR],4,schematic_polyline
+R106,proposed,rice,rail,4,-98.35,19.36,bend,R106 bend 3,Rice Corridor F06,L-F06,[LINE_COLOR],4,schematic_polyline
+R106,proposed,rice,rail,5,-99.13,19.43,destination,Valle de México Food Processing Cluster,Rice Corridor F06,L-F06,[LINE_COLOR],4,schematic_polyline
+R107,proposed,maize,rail,1,-102.2,17.96,origin,Port of Lázaro Cárdenas,Maize Corridor F07,L-F07,[LINE_COLOR],4,schematic_polyline
+R107,proposed,maize,rail,2,-102.38,18.85,bend,R107 bend 1,Maize Corridor F07,L-F07,[LINE_COLOR],4,schematic_polyline
+R107,proposed,maize,rail,3,-102.82,19.55,bend,R107 bend 2,Maize Corridor F07,L-F07,[LINE_COLOR],4,schematic_polyline
+R107,proposed,maize,rail,4,-103.18,20.1,bend,R107 bend 3,Maize Corridor F07,L-F07,[LINE_COLOR],4,schematic_polyline
+R107,proposed,maize,rail,5,-103.35,20.67,destination,Guadalajara Logistics Hub,Maize Corridor F07,L-F07,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,1,-107.39,24.81,origin,Sinaloa Storage Cluster,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,2,-106.45,24.1,bend,R108 bend 1,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,3,-105.1,23.05,bend,R108 bend 2,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,4,-103.7,21.95,bend,R108 bend 3,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,5,-102.2,20.95,bend,R108 bend 4,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,6,-100.75,20.05,bend,R108 bend 5,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,7,-99.75,19.65,bend,R108 bend 6,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R108,proposed,maize,rail,8,-99.13,19.43,destination,Valle de México Food Processing Cluster,Maize Corridor F08,L-F08,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,1,-108.99,25.79,origin,Los Mochis Agricultural Hub,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,2,-108.18,25.3,bend,R109 bend 1,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,3,-107.39,24.81,bend,R109 bend 2,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,4,-106.0,23.75,bend,R109 bend 3,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,5,-104.65,22.75,bend,R109 bend 4,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,6,-103.25,21.75,bend,R109 bend 5,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,7,-101.85,20.85,bend,R109 bend 6,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,8,-100.55,19.98,bend,R109 bend 7,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,9,-99.6,19.58,bend,R109 bend 8,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R109,proposed,beans,rail,10,-99.13,19.43,destination,Valle de México Food Processing Cluster,Beans Corridor F09,L-F09,[LINE_COLOR],4,schematic_polyline
+R110,proposed,rice,short_haul,1,-89.66,21.28,origin,Port of Progreso,Rice Corridor F10,L-F10,[LINE_COLOR],2,simple_line
+R110,proposed,rice,short_haul,2,-93.12,16.75,destination,Sureste Storage Cluster,Rice Corridor F10,L-F10,[LINE_COLOR],2,simple_line

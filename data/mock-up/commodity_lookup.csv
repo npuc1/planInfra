@@ -1,0 +1,5 @@
+commodity,label,default_color_name,notes
+maize,Maize / Corn,yellow,Primary commodity with highest transport volumes
+beans,Beans,red,Pulse commodity with smaller but strategic flows
+wheat,Wheat,gold,Includes significant import dependence in some regions
+rice,Rice,green,Smaller market with port-linked logistics relevance
