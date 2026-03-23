@@ -177,6 +177,7 @@ export function SidePanel({ state, actions }: SidePanelProps) {
           active={state.mode}
           onSelect={actions.setMode}
         />
+
       </div>
 
       {/* ── Hub detail / Legend ───────────────────────────────────────────── */}

@@ -3,6 +3,9 @@
 // US export origin; not tied to any specific port or crossing.
 export const US_ORIGIN: [number, number] = [-97.5, 38.0];
 
+/** Sentinel id used when the US-origin node is selected (= "select all imports"). */
+export const US_ORIGIN_ID = '__us_origin__';
+
 // ─── Import volumes per node (tons/year, estimated) ───────────────────────────
 // Sources: importacion maiz.xlsx (categories/nature of each node used to
 // assign relative scale); absolute figures are indicative/estimated.

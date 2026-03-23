@@ -16,9 +16,20 @@ export default function App() {
   const handleArcHover  = useCallback((id: string | null) => setHoveredArcId(id), []);
   const handleArcClick  = useCallback((id: string) => setSelectedArcId(prev => prev === id ? null : id), []);
   const handleClearArc  = useCallback(() => setSelectedArcId(null), []);
+  const handleClearHub  = useCallback(() => actions.selectHub(null), [actions]);
 
-  const bubbleLayer = useProductionBubbles(state);
-  const hubLayers   = useLayers(state);
+  const handleBubbleClick = useCallback(
+    (stateName: string) => actions.selectState(state.selectedState === stateName ? null : stateName),
+    [actions, state.selectedState],
+  );
+  const handleRailClick = useCallback(
+    (operator: string) => actions.selectRailOperator(state.selectedRailOperator === operator ? null : operator),
+    [actions, state.selectedRailOperator],
+  );
+  const handleClearRailOperator = useCallback(() => actions.selectRailOperator(null), [actions]);
+
+  const bubbleLayer = useProductionBubbles(state, handleBubbleClick);
+  const hubLayers   = useLayers(state, handleRailClick);
   const importFlows = useImportFlows(state, animTime, hoveredArcId, selectedArcId, handleArcHover, handleArcClick);
 
   const layers = useMemo(
@@ -40,7 +51,20 @@ export default function App() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-950">
       <SidePanel state={state} actions={actions} />
-      <MapView layers={layers} onHubClick={handleHubClick} onClearArcSelection={handleClearArc} />
+      <MapView
+        layers={layers}
+        onHubClick={handleHubClick}
+        onClearArcSelection={handleClearArc}
+        onClearHub={handleClearHub}
+        selectedState={state.selectedState}
+        onSelectState={actions.selectState}
+        selectedHubId={state.selectedHubId}
+        selectedArcId={selectedArcId}
+        selectedRailOperator={state.selectedRailOperator}
+        onClearRailOperator={handleClearRailOperator}
+        commodity={state.commodity}
+        mode={state.mode}
+      />
     </div>
   );
 }

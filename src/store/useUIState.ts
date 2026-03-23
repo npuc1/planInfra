@@ -6,14 +6,18 @@ type Action =
   | { type: 'SET_COMMODITY'; commodity: Commodity }
   | { type: 'SET_MODE';      mode: ViewMode }
   | { type: 'SELECT_HUB';   hubId: string | null }
+  | { type: 'SELECT_STATE';  stateName: string | null }
+  | { type: 'SELECT_RAIL_OPERATOR'; operator: string | null }
   | { type: 'TOGGLE_HUB_TYPE'; hubType: HubType }
   | { type: 'TOGGLE_RAIL_NETWORK' }
   | { type: 'TOGGLE_RAIL_OPERATOR'; operator: string };
 
 const INITIAL_STATE: UIState = {
-  commodity:     'maize',
-  mode:          'production',
-  selectedHubId: null,
+  commodity:            'maize',
+  mode:                 'production',
+  selectedHubId:        null,
+  selectedState:        null,
+  selectedRailOperator: null,
   hubTypeVisibility: {
     port:         true,
     terminal:     true,
@@ -29,6 +33,8 @@ function reducer(state: UIState, action: Action): UIState {
     case 'SET_COMMODITY': return { ...state, commodity: action.commodity, selectedHubId: null };
     case 'SET_MODE':      return { ...state, mode: action.mode,           selectedHubId: null };
     case 'SELECT_HUB':   return { ...state, selectedHubId: action.hubId };
+    case 'SELECT_STATE':         return { ...state, selectedState: action.stateName, selectedHubId: null };
+    case 'SELECT_RAIL_OPERATOR': return { ...state, selectedRailOperator: action.operator };
     case 'TOGGLE_HUB_TYPE': return {
       ...state,
       hubTypeVisibility: {
@@ -65,7 +71,9 @@ export function useUIState() {
     state,
     setCommodity:         (commodity: Commodity) => dispatch({ type: 'SET_COMMODITY', commodity }),
     setMode:              (mode: ViewMode)       => dispatch({ type: 'SET_MODE',      mode      }),
-    selectHub:            (hubId: string | null) => dispatch({ type: 'SELECT_HUB',   hubId     }),
+    selectHub:            (hubId: string | null)   => dispatch({ type: 'SELECT_HUB',   hubId     }),
+    selectState:          (stateName: string | null)  => dispatch({ type: 'SELECT_STATE',         stateName }),
+    selectRailOperator:   (operator: string | null)   => dispatch({ type: 'SELECT_RAIL_OPERATOR', operator }),
     toggleHubType:        (hubType: HubType)     => dispatch({ type: 'TOGGLE_HUB_TYPE', hubType }),
     toggleRailNetwork:    ()                     => dispatch({ type: 'TOGGLE_RAIL_NETWORK' }),
     toggleRailOperator:   (operator: string)     => dispatch({ type: 'TOGGLE_RAIL_OPERATOR', operator }),

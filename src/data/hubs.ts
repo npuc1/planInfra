@@ -286,3 +286,6 @@ export const HUBS: Hub[] = [
 ];
 
 export const HUB_BY_ID = Object.fromEntries(HUBS.map(h => [h.id, h]));
+
+/** Unique Mexican state names that appear in the hubs dataset, sorted alphabetically. */
+export const HUB_STATES: string[] = [...new Set(HUBS.map(h => h.state))].sort((a, b) => a.localeCompare(b, 'es'));

@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
 import { ScatterplotLayer, TextLayer, PathLayer } from '@deck.gl/layers';
-import type { Layer } from '@deck.gl/core';
+import type { Layer, PickingInfo } from '@deck.gl/core';
 
 import { HUBS } from '../data/hubs';
 import { RAIL_SEGMENTS, type RailSegment } from '../data/railNetwork';
+
+export type RailDatum = RailSegment & { _isRail: true };
 import {
   HUB_TYPE_COLORS,
   type UIState,
@@ -31,67 +33,92 @@ function isHubVisible(hub: Hub, state: UIState): boolean {
 
 // ─── useLayers ────────────────────────────────────────────────────────────────
 
-export function useLayers(state: UIState): Layer[] {
+export function useLayers(
+  state: UIState,
+  onRailClick: (operator: string) => void,
+): Layer[] {
   return useMemo(() => {
     const visibleHubs = HUBS.filter(h => isHubVisible(h, state));
     const layers: Layer[] = [];
 
     // ── Rail network (PathLayer) ────────────────────────────────────────
     if (state.showRailNetwork) {
-      const visibleSegs = RAIL_SEGMENTS.filter(
+      const sr = state.selectedRailOperator;
+
+      const rawSegs = RAIL_SEGMENTS.filter(
         s => state.railOperatorVisibility[s.operator] !== false,
       );
+      // Wrap with _isRail so tooltip/click can identify these objects
+      const visibleSegs: RailDatum[] = rawSegs.map(s => ({ ...s, _isRail: true as const }));
+
+      function railAlpha(s: RailDatum, base: number): number {
+        if (!sr) return base;
+        return s.operator === sr ? Math.min(1, base * 1.25) : base * 0.18;
+      }
+      function railWidth(s: RailDatum, base: number): number {
+        return sr && s.operator === sr ? base * 1.6 : base;
+      }
+      function onRailSegClick(info: PickingInfo) {
+        const seg = info.object as RailDatum | null;
+        if (seg?._isRail) onRailClick(seg.operator);
+      }
 
       // Core segments (solid lines)
       layers.push(
-        new PathLayer<RailSegment>({
+        new PathLayer<RailDatum>({
           id: 'rail-core',
           data: visibleSegs.filter(s => s.status === 'active'),
-          getPath: (s: RailSegment) => s.path,
-          // Slightly brighter and thicker for better contrast on dark basemap
-          getColor: (s: RailSegment) => withAlpha(s.color, 0.85),
-          getWidth: 2.25,
+          getPath:  s => s.path,
+          getColor: s => withAlpha(s.color, railAlpha(s, 0.85)),
+          getWidth: s => railWidth(s, 2.25),
           widthUnits: 'pixels',
           widthMinPixels: 1.5,
-          widthMaxPixels: 4,
+          widthMaxPixels: 5,
           capRounded: true,
           jointRounded: true,
-          pickable: false,
+          pickable: true,
+          onClick: onRailSegClick,
+          updateTriggers: { getColor: sr, getWidth: sr },
         }),
       );
 
       // Extension / low-certainty segments (dimmer)
       layers.push(
-        new PathLayer<RailSegment>({
+        new PathLayer<RailDatum>({
           id: 'rail-extension',
           data: visibleSegs.filter(s => s.status === 'extension_low_certainty'),
-          getPath: (s: RailSegment) => s.path,
-          // Keep visually distinct but not as faint
-          getColor: (s: RailSegment) => withAlpha(s.color, 0.50),
-          getWidth: 1.75,
+          getPath:  s => s.path,
+          getColor: s => withAlpha(s.color, railAlpha(s, 0.50)),
+          getWidth: s => railWidth(s, 1.75),
           widthUnits: 'pixels',
           widthMinPixels: 1,
           capRounded: true,
           jointRounded: true,
-          pickable: false,
+          pickable: true,
+          onClick: onRailSegClick,
+          updateTriggers: { getColor: sr, getWidth: sr },
         }),
       );
     }
 
     // ── Hub scatter ────────────────────────────────────────────────────────
+    const ss = state.selectedState;
+
     layers.push(
       new ScatterplotLayer({
         id: 'hubs',
         data: visibleHubs,
         getPosition: (h: Hub) => [h.lng, h.lat],
-        getFillColor: (h: Hub) =>
-          h.id === state.selectedHubId
-            ? [255, 255, 255, 240] as RGBA
-            : withAlpha(HUB_TYPE_COLORS[h.type], 0.9),
-        getLineColor: (h: Hub) =>
-          h.id === state.selectedHubId
-            ? [255, 255, 255, 255] as RGBA
-            : withAlpha(HUB_TYPE_COLORS[h.type], 0.5),
+        getFillColor: (h: Hub) => {
+          const stateActive = !ss || h.state === ss;
+          if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 240 : 80] as RGBA;
+          return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.9 : 0.12);
+        },
+        getLineColor: (h: Hub) => {
+          const stateActive = !ss || h.state === ss;
+          if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 255 : 80] as RGBA;
+          return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.5 : 0.08);
+        },
         getRadius: (h: Hub) =>
           h.id === state.selectedHubId ? 14_000 : (h.type === 'port' ? 11_000 : 7_000),
         stroked: true,
@@ -100,7 +127,8 @@ export function useLayers(state: UIState): Layer[] {
         radiusUnits: 'meters',
         pickable: true,
         updateTriggers: {
-          getFillColor: state.selectedHubId,
+          getFillColor: [state.selectedHubId, ss],
+          getLineColor: [state.selectedHubId, ss],
           getRadius:    state.selectedHubId,
         },
       }),
@@ -127,5 +155,5 @@ export function useLayers(state: UIState): Layer[] {
     );
 
     return layers;
-  }, [state.mode, state.selectedHubId, state.hubTypeVisibility, state.showRailNetwork, state.railOperatorVisibility]);
+  }, [state.mode, state.selectedHubId, state.selectedState, state.selectedRailOperator, state.hubTypeVisibility, state.showRailNetwork, state.railOperatorVisibility, onRailClick]);
 }

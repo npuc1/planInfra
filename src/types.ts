@@ -49,6 +49,8 @@ export interface UIState {
   commodity: Commodity;
   mode: ViewMode;
   selectedHubId: string | null;
+  selectedState: string | null;
+  selectedRailOperator: string | null;
   hubTypeVisibility: Record<HubType, boolean>;
   showRailNetwork: boolean;
   railOperatorVisibility: Record<string, boolean>;

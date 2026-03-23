@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
-import { PathLayer } from '@deck.gl/layers';
+import { PathLayer, ScatterplotLayer, TextLayer } from '@deck.gl/layers';
 import { TripsLayer } from '@deck.gl/geo-layers';
 import type { Layer, PickingInfo } from '@deck.gl/core';
 
 import { HUBS, HUB_BY_ID } from '../data/hubs';
 import {
   US_ORIGIN,
+  US_ORIGIN_ID,
   IMPORT_NODE_VOLUMES,
   CONSUMER_PROVIDER,
   CONSUMER_VOLUMES,
@@ -161,12 +162,28 @@ export function useImportFlows(
       if (obj?._isArc) onArcClick(obj.id);
     }
 
-    // Dim factor: a branch arc is also "active" when its parent import node is active
+    // State filter: an arc is state-active if any of its endpoint hubs is in the selected state
+    const ss = state.selectedState;
+    function isStateActive(d: ImportArcDatum): boolean {
+      if (!ss) return true;
+      if (d.id.startsWith('branch-')) {
+        const consumerId = d.id.slice(7);   // strip 'branch-'
+        const consumerState = HUB_BY_ID[consumerId]?.state;
+        const providerState = d.providerNodeId ? HUB_BY_ID[d.providerNodeId]?.state : undefined;
+        return consumerState === ss || providerState === ss;
+      }
+      return HUB_BY_ID[d.id]?.state === ss;
+    }
+
+    // Dim factor: a branch arc is also "active" when its parent import node is active.
+    // US_ORIGIN_ID acts as "select all" — overrides both state filter and arc filter.
+    // Otherwise both the state filter and the arc hover/selection must pass.
     function isActive(d: ImportArcDatum): boolean {
-      if (!hasActive) return true;
-      if (activeId === d.id) return true;
-      if (d.providerNodeId && activeId === d.providerNodeId) return true;
-      return false;
+      if (activeId === US_ORIGIN_ID) return true;
+      const stateOk = isStateActive(d);
+      if (!hasActive) return stateOk;
+      const arcOk = activeId === d.id || (!!d.providerNodeId && activeId === d.providerNodeId);
+      return stateOk && arcOk;
     }
     function baseAlpha(d: ImportArcDatum): number {
       return isActive(d) ? 1 : 0.12;
@@ -192,7 +209,7 @@ export function useImportFlows(
       ] as RGBA;
     }
 
-    const updateActive = [activeId];
+    const updateActive = [activeId, ss];
 
     // Helper: emit PathLayer + TripsLayer pair sharing the same geometry
     function addArcGroup(
@@ -244,6 +261,57 @@ export function useImportFlows(
     addArcGroup('import',  importArcs,  240);
     addArcGroup('branch',  branchArcs,  160);
 
+    // ── US origin node ────────────────────────────────────────────────────
+    // A single pickable point at the US corn-belt origin. Clicking it
+    // sets activeId = US_ORIGIN_ID, which lights up every import arc.
+    const originSelected = activeId === US_ORIGIN_ID;
+    const originHovered  = hoveredArcId === US_ORIGIN_ID;
+
+    layers.push(
+      new ScatterplotLayer({
+        id: 'us-origin',
+        data: [{ id: US_ORIGIN_ID }],
+        getPosition: () => [...US_ORIGIN, 0] as [number, number, number],
+        getRadius:    () => originSelected ? 90_000 : 60_000,
+        getFillColor: () => originSelected
+          ? ([255, 215, 70, 230] as RGBA)
+          : originHovered
+            ? ([255, 210, 80, 180] as RGBA)
+            : ([255, 200, 60, 130] as RGBA),
+        getLineColor: () => [255, 200, 60, 200] as RGBA,
+        stroked: true,
+        lineWidthMinPixels: originSelected ? 3 : 1.5,
+        radiusUnits: 'meters',
+        pickable: true,
+        onHover: (info: PickingInfo) => onArcHover(info.object ? US_ORIGIN_ID : null),
+        onClick: (info: PickingInfo) => { if (info.object) onArcClick(US_ORIGIN_ID); },
+        updateTriggers: {
+          getFillColor: [originSelected, originHovered],
+          getRadius:    originSelected,
+          lineWidthMinPixels: originSelected,
+        },
+      }),
+    );
+
+    // Text label beneath the origin node (non-interactive)
+    layers.push(
+      new TextLayer({
+        id: 'us-origin-label',
+        data: [{ text: 'Origen EE.UU.' }],
+        getPosition: () => [...US_ORIGIN, 0],
+        getText: (d: { text: string }) => d.text,
+        getSize: 11,
+        getColor: [255, 200, 60, originSelected ? 230 : 140] as RGBA,
+        getTextAnchor: 'middle',
+        getAlignmentBaseline: 'top',
+        getPixelOffset: [0, 14],
+        fontFamily: 'Inter, system-ui, sans-serif',
+        fontWeight: '600',
+        pickable: false,
+        updateTriggers: { getColor: originSelected },
+      }),
+    );
+
     return layers;
-  }, [importArcs, branchArcs, animTime, hoveredArcId, selectedArcId, onArcHover, onArcClick]);
+  }, [importArcs, branchArcs, animTime, hoveredArcId, selectedArcId, state.selectedState, onArcHover, onArcClick]);
 }
