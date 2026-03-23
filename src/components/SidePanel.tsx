@@ -1,11 +1,21 @@
 import type { UIActions } from '../store/useUIState';
-import type { UIState, Commodity, ViewMode } from '../types';
+import type { BasemapId } from './MapView';
+import type {
+  UIState,
+  Commodity,
+  ViewMode,
+  ProductionBubbleMetric,
+  StorageBubbleMetric,
+  HubType,
+} from '../types';
 import {
   COMMODITY_COLORS,
   COMMODITY_LABELS,
   HUB_TYPE_COLORS,
   HUB_TYPE_LABELS,
   MODE_LABELS,
+  PRODUCTION_BUBBLE_LABELS,
+  STORAGE_BUBBLE_LABELS,
 } from '../types';
 import { HUB_BY_ID } from '../data/hubs';
 import { RAIL_OPERATORS, RAIL_OPERATOR_COLORS, RAIL_OPERATOR_NAMES } from '../data/railNetwork';
@@ -13,7 +23,9 @@ import { RAIL_OPERATORS, RAIL_OPERATOR_COLORS, RAIL_OPERATOR_NAMES } from '../da
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const COMMODITIES: Commodity[] = ['maize', 'beans', 'wheat', 'rice'];
-const MODES: ViewMode[]        = ['production', 'consumption', 'storage'];
+const MODES: ViewMode[]        = ['production', 'storage'];
+const PRODUCTION_METRICS: ProductionBubbleMetric[] = ['total', 'consumption', 'balance'];
+const STORAGE_METRICS: StorageBubbleMetric[] = ['total', 'balance'];
 
 function fmt(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} M`;
@@ -64,6 +76,74 @@ function PillGroup<T extends string>({
         })}
       </div>
     </div>
+  );
+}
+
+/** Vista pills: click active again to clear (no choropleth bubbles). */
+function ViewModePillGroup({
+  active,
+  onChange,
+}: {
+  active: ViewMode | null;
+  onChange: (v: ViewMode | null) => void;
+}) {
+  return (
+    <div className="mb-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-2">Vista</p>
+      <div className="flex flex-wrap gap-1.5">
+        {MODES.map(m => {
+          const isActive = m === active;
+          return (
+            <button
+              key={m}
+              type="button"
+              onClick={() => onChange(isActive ? null : m)}
+              className={`px-3 py-1 text-xs font-semibold rounded-full border transition-all ${
+                isActive
+                  ? 'bg-white text-slate-900 border-white'
+                  : 'border-slate-600 text-slate-400 hover:border-slate-300 hover:text-slate-200'
+              }`}
+            >
+              {MODE_LABELS[m]}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Hub type toggle row (legend) ─────────────────────────────────────────────
+
+function HubTypeToggleRow({
+  hubType,
+  visible,
+  onToggle,
+}: {
+  hubType: HubType;
+  visible: boolean;
+  onToggle: () => void;
+}) {
+  const [r2, g2, b2] = HUB_TYPE_COLORS[hubType];
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`flex items-center gap-2 w-full rounded-md px-2 py-1.5 transition-all text-left group ${
+        visible ? 'bg-slate-800/60 hover:bg-slate-700/70 text-slate-50' : 'opacity-40 hover:opacity-60'
+      }`}
+    >
+      <span
+        className="w-3 h-3 rounded-full flex-shrink-0 transition-transform group-hover:scale-125"
+        style={{
+          backgroundColor: visible ? `rgb(${r2},${g2},${b2})` : 'transparent',
+          border: `2px solid rgb(${r2},${g2},${b2})`,
+        }}
+      />
+      <span className={`text-xs ${visible ? 'font-semibold text-slate-100' : 'text-slate-400 line-through'}`}>
+        {HUB_TYPE_LABELS[hubType]}
+      </span>
+    </button>
   );
 }
 
@@ -127,12 +207,20 @@ function HubDetail({ hubId, onClose }: { hubId: string; onClose: () => void }) {
 
 // ─── SidePanel ────────────────────────────────────────────────────────────────
 
+const BASEMAP_OPTIONS: { id: BasemapId; label: string }[] = [
+  { id: 'dark',  label: 'Oscuro'    },
+  { id: 'light', label: 'Claro'     },
+  { id: 'gray',  label: 'Topográfico' },
+];
+
 interface SidePanelProps {
-  state:   UIState;
-  actions: UIActions;
+  state:        UIState;
+  actions:      UIActions;
+  basemap:      BasemapId;
+  onSetBasemap: (b: BasemapId) => void;
 }
 
-export function SidePanel({ state, actions }: SidePanelProps) {
+export function SidePanel({ state, actions, basemap, onSetBasemap }: SidePanelProps) {
   const commodityRgb = COMMODITY_COLORS[state.commodity];
   const commodityHex = `rgb(${commodityRgb[0]},${commodityRgb[1]},${commodityRgb[2]})`;
 
@@ -144,7 +232,9 @@ export function SidePanel({ state, actions }: SidePanelProps) {
     }),
   ) as Record<Commodity, string>;
 
-  const modeOptions = MODES.map(m => ({ value: m, label: MODE_LABELS[m] }));
+  const anyRailOn = RAIL_OPERATORS.some(
+    op => state.railOperatorVisibility[op] !== false,
+  );
 
   return (
     <aside className="w-80 flex-shrink-0 h-full bg-slate-900/95 backdrop-blur-sm border-r border-slate-800 flex flex-col overflow-hidden">
@@ -157,9 +247,6 @@ export function SidePanel({ state, actions }: SidePanelProps) {
         <h1 className="text-lg font-extrabold text-white leading-tight">
           Balance Granos · 2025
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Producción SIAP · Terminales SCT · Importadores
-        </p>
       </div>
 
       {/* ── Controls ──────────────────────────────────────────────────────── */}
@@ -171,12 +258,23 @@ export function SidePanel({ state, actions }: SidePanelProps) {
           onSelect={actions.setCommodity}
           colorMap={commodityColorMap}
         />
-        <PillGroup
-          label="Vista"
-          options={modeOptions}
-          active={state.mode}
-          onSelect={actions.setMode}
-        />
+        <ViewModePillGroup active={state.mode} onChange={actions.setMode} />
+        {state.mode === 'production' && (
+          <PillGroup<ProductionBubbleMetric>
+            label="Producción"
+            options={PRODUCTION_METRICS.map(m => ({ value: m, label: PRODUCTION_BUBBLE_LABELS[m] }))}
+            active={state.productionBubbleMetric}
+            onSelect={actions.setProductionBubbleMetric}
+          />
+        )}
+        {state.mode === 'storage' && (
+          <PillGroup<StorageBubbleMetric>
+            label="Almacenamiento"
+            options={STORAGE_METRICS.map(m => ({ value: m, label: STORAGE_BUBBLE_LABELS[m] }))}
+            active={state.storageBubbleMetric}
+            onSelect={actions.setStorageBubbleMetric}
+          />
+        )}
 
       </div>
 
@@ -190,59 +288,46 @@ export function SidePanel({ state, actions }: SidePanelProps) {
         ) : (
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">
-              Leyenda
+              COMPONENTES
             </p>
 
             {/* Hub type legend (clickable toggles) */}
-            <div className="space-y-1 mb-4">
-              {(['port', 'terminal', 'import_node', 'end_consumer'] as const).map(type => {
-                const [r2, g2, b2] = HUB_TYPE_COLORS[type];
-                const visible = state.hubTypeVisibility[type];
-                return (
-                  <button
-                    key={type}
-                    onClick={() => actions.toggleHubType(type)}
-                    className={`flex items-center gap-2 w-full rounded-md px-2 py-1.5 transition-all text-left group ${
-                      visible ? 'bg-slate-800/60 hover:bg-slate-700/70 text-slate-50' : 'opacity-40 hover:opacity-60'
-                    }`}
-                  >
-                    <span
-                      className="w-3 h-3 rounded-full flex-shrink-0 transition-transform group-hover:scale-125"
-                      style={{
-                        backgroundColor: visible ? `rgb(${r2},${g2},${b2})` : 'transparent',
-                        border: `2px solid rgb(${r2},${g2},${b2})`,
-                      }}
-                    />
-                    <span className={`text-xs ${visible ? 'font-semibold text-slate-100' : 'text-slate-400 line-through'}`}>
-                      {HUB_TYPE_LABELS[type]}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="space-y-1 mb-3">
+              {(['port', 'terminal'] as const).map(type => (
+                <HubTypeToggleRow
+                  key={type}
+                  hubType={type}
+                  visible={state.hubTypeVisibility[type]}
+                  onToggle={() => actions.toggleHubType(type)}
+                />
+              ))}
             </div>
 
-            {/* Bubble legend */}
-            <div className="border-t border-slate-700 pt-3">
-              <p className="text-xs text-slate-500 mb-1.5">Círculo = {
-                state.mode === 'production'  ? 'producción (ton)' :
-                state.mode === 'consumption' ? 'consumo estimado (ton)' :
-                                               'capacidad almacenamiento (ton)'
-              }</p>
+            <div className="space-y-1 mb-4 border-t border-slate-700 pt-3">
+              {(['import_node', 'end_consumer'] as const).map(type => (
+                <HubTypeToggleRow
+                  key={type}
+                  hubType={type}
+                  visible={state.hubTypeVisibility[type]}
+                  onToggle={() => actions.toggleHubType(type)}
+                />
+              ))}
             </div>
 
             {/* Rail network legend */}
             <div className="border-t border-slate-700 pt-3 mt-1">
               <button
-                onClick={actions.toggleRailNetwork}
+                type="button"
+                onClick={actions.toggleAllRailOperators}
                 className={`flex items-center gap-2 w-full rounded-md px-2 py-1.5 mb-2 transition-all text-left group ${
-                  state.showRailNetwork
+                  anyRailOn
                     ? 'bg-slate-800/60 hover:bg-slate-700/70'
                     : 'opacity-40 hover:opacity-60'
                 }`}
               >
                 <span className="flex gap-0.5 flex-shrink-0">
-                  {(['FMX', 'FSR', 'Z'] as const).map(op => {
-                    const [r2, g2, b2] = RAIL_OPERATOR_COLORS[op];
+                  {RAIL_OPERATORS.slice(0, 3).map(op => {
+                    const [r2, g2, b2] = RAIL_OPERATOR_COLORS[op] ?? [128, 128, 128];
                     return (
                       <span
                         key={op}
@@ -252,44 +337,43 @@ export function SidePanel({ state, actions }: SidePanelProps) {
                     );
                   })}
                 </span>
-                <span className={`text-xs ${state.showRailNetwork ? 'font-semibold text-slate-100' : 'text-slate-400 line-through'}`}>
+                <span className={`text-xs ${anyRailOn ? 'font-semibold text-slate-100' : 'text-slate-400 line-through'}`}>
                   Red ferroviaria nacional
                 </span>
               </button>
 
-              {state.showRailNetwork && (
-                <div className="space-y-0.5 pl-2">
-                  {RAIL_OPERATORS.map(op => {
-                    const [r2, g2, b2] = RAIL_OPERATOR_COLORS[op];
-                    const visible = state.railOperatorVisibility[op] !== false;
-                    return (
-                      <button
-                        key={op}
-                        onClick={() => actions.toggleRailOperator(op)}
-                        className={`flex items-center gap-2 w-full rounded px-1.5 py-1 transition-all text-left group ${
-                          visible ? 'hover:bg-slate-800/50' : 'opacity-40 hover:opacity-60'
-                        }`}
-                      >
-                        <span
-                          className="flex-shrink-0 block rounded-full transition-opacity"
-                          style={{
-                            width: 20,
-                            height: 2,
-                            backgroundColor: `rgb(${r2},${g2},${b2})`,
-                            opacity: visible ? 0.85 : 0.3,
-                          }}
-                        />
-                        <span className={`text-xs ${visible ? 'text-slate-300' : 'text-slate-500 line-through'}`}>
-                          {RAIL_OPERATOR_NAMES[op]}
-                        </span>
-                      </button>
-                    );
-                  })}
-                  <p className="text-xs text-slate-600 pt-1 px-1.5">
-                    Línea K más allá de Tonalá: trazo de baja certeza.
-                  </p>
-                </div>
-              )}
+              <div className="space-y-0.5 pl-2">
+                {RAIL_OPERATORS.map(op => {
+                  const [r2, g2, b2] = RAIL_OPERATOR_COLORS[op];
+                  const visible = state.railOperatorVisibility[op] !== false;
+                  return (
+                    <button
+                      key={op}
+                      type="button"
+                      onClick={() => actions.toggleRailOperator(op)}
+                      className={`flex items-center gap-2 w-full rounded px-1.5 py-1 transition-all text-left group ${
+                        visible ? 'hover:bg-slate-800/50' : 'opacity-40 hover:opacity-60'
+                      }`}
+                    >
+                      <span
+                        className="flex-shrink-0 block rounded-full transition-opacity"
+                        style={{
+                          width: 20,
+                          height: 2,
+                          backgroundColor: `rgb(${r2},${g2},${b2})`,
+                          opacity: visible ? 0.85 : 0.3,
+                        }}
+                      />
+                      <span className={`text-xs ${visible ? 'text-slate-300' : 'text-slate-500 line-through'}`}>
+                        {RAIL_OPERATOR_NAMES[op]}
+                      </span>
+                    </button>
+                  );
+                })}
+                <p className="text-xs text-slate-600 pt-1 px-1.5">
+                  Líneas más tenues: vías sin uso activo (fuente: RFN 2024).
+                </p>
+              </div>
             </div>
 
             {/* Source note */}
@@ -299,6 +383,27 @@ export function SidePanel({ state, actions }: SidePanelProps) {
             </p>
           </div>
         )}
+      </div>
+
+      {/* ── Basemap switcher ──────────────────────────────────────────────── */}
+      <div className="px-5 py-3 border-t border-slate-800 flex-shrink-0">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">Mapa base</p>
+        <div className="flex gap-1.5">
+          {BASEMAP_OPTIONS.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onSetBasemap(id)}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md border transition-all ${
+                basemap === id
+                  ? 'bg-slate-200 text-slate-900 border-slate-200'
+                  : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
     </aside>
   );

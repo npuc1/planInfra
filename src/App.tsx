@@ -1,14 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useUIState } from './store/useUIState';
 import { useLayers } from './hooks/useLayers';
+import { useRailSegments } from './hooks/useRailSegments';
 import { useProductionBubbles } from './hooks/useChoropleth';
 import { useImportFlows } from './hooks/useImportFlows';
 import { useAnimation } from './hooks/useAnimation';
 import { SidePanel } from './components/SidePanel';
-import { MapView } from './components/MapView';
+import { MapView, type BasemapId } from './components/MapView';
 
 export default function App() {
   const { state, ...actions } = useUIState();
+  const [basemap, setBasemap] = useState<BasemapId>('dark');
 
   const animTime                            = useAnimation(0.28);
   const [hoveredArcId,  setHoveredArcId]  = useState<string | null>(null);
@@ -28,8 +30,10 @@ export default function App() {
   );
   const handleClearRailOperator = useCallback(() => actions.selectRailOperator(null), [actions]);
 
+  const railSegments = useRailSegments();
+
   const bubbleLayer = useProductionBubbles(state, handleBubbleClick);
-  const hubLayers   = useLayers(state, handleRailClick);
+  const hubLayers   = useLayers(state, handleRailClick, railSegments);
   const importFlows = useImportFlows(state, animTime, hoveredArcId, selectedArcId, handleArcHover, handleArcClick);
 
   const layers = useMemo(
@@ -50,20 +54,25 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-950">
-      <SidePanel state={state} actions={actions} />
+      <SidePanel state={state} actions={actions} basemap={basemap} onSetBasemap={setBasemap} />
       <MapView
+        basemap={basemap}
         layers={layers}
         onHubClick={handleHubClick}
         onClearArcSelection={handleClearArc}
         onClearHub={handleClearHub}
         selectedState={state.selectedState}
         onSelectState={actions.selectState}
+        selectedRegion={state.selectedRegion}
+        onSelectRegion={actions.selectRegion}
         selectedHubId={state.selectedHubId}
         selectedArcId={selectedArcId}
         selectedRailOperator={state.selectedRailOperator}
         onClearRailOperator={handleClearRailOperator}
         commodity={state.commodity}
         mode={state.mode}
+        productionBubbleMetric={state.productionBubbleMetric}
+        storageBubbleMetric={state.storageBubbleMetric}
       />
     </div>
   );

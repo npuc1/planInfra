@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import json; print\\(''json ok''\\)\")",
+      "Bash(python3 -c \"import shapefile; print\\(''pyshp ok''\\)\")",
+      "Bash(py -3 -m pip install pyshp -q)",
+      "Bash(py -3 -c \"import shapefile; print\\(''''pyshp ok''''\\)\")"
+    ]
+  }
+}

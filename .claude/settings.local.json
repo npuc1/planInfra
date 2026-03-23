@@ -7,7 +7,10 @@
       "Bash(python -c \":*)",
       "Bash(npm run:*)",
       "Bash(python3 -c \":*)",
-      "Bash(find . -name trenes -o -name *.geojson -o -name *tren*)"
+      "Bash(find . -name trenes -o -name *.geojson -o -name *tren*)",
+      "Bash(wc -l \"c:/Users/Usuario/planInfra/data/data/trenes/ferromex_schematic/\"*.csv)",
+      "Bash(head -5 \"c:/Users/Usuario/planInfra/data/data/trenes/fioc_schematic/\"*.csv)",
+      "Bash(py -3 -c \":*)"
     ]
   }
 }

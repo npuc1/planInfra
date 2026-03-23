@@ -3,9 +3,8 @@ import { ScatterplotLayer, TextLayer, PathLayer } from '@deck.gl/layers';
 import type { Layer, PickingInfo } from '@deck.gl/core';
 
 import { HUBS } from '../data/hubs';
-import { RAIL_SEGMENTS, type RailSegment } from '../data/railNetwork';
-
-export type RailDatum = RailSegment & { _isRail: true };
+import { REGION_STATES } from '../data/regions';
+import { RAIL_OPERATORS, RAIL_OPERATOR_COLORS, RAIL_OPERATOR_NAMES, type RailSegment } from '../data/railNetwork';
 import {
   HUB_TYPE_COLORS,
   type UIState,
@@ -14,20 +13,24 @@ import {
   type RGBA,
 } from '../types';
 
+// ─── Types ─────────────────────────────────────────────────────────────────────
+
+export type RailDatum = RailSegment & {
+  _isRail: true;
+  color: RGB;
+  operatorName: string;
+  routeGroup: string;
+};
+
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function withAlpha(rgb: RGB, a: number): RGBA {
   return [rgb[0], rgb[1], rgb[2], Math.round(a * 255)];
 }
 
-// ─── Hub visibility by view mode ─────────────────────────────────────────────
-//
-// production / balance  → ports + terminals (where grain moves through)
-// consumption           → import_node + end_consumer (where it's demanded/used)
-// storage               → terminals (where it's stored inland)
+// ─── Hub visibility ───────────────────────────────────────────────────────────
 
 function isHubVisible(hub: Hub, state: UIState): boolean {
-  // Visible if its type is enabled in the legend, regardless of view mode
   return state.hubTypeVisibility[hub.type] ?? true;
 }
 
@@ -36,20 +39,31 @@ function isHubVisible(hub: Hub, state: UIState): boolean {
 export function useLayers(
   state: UIState,
   onRailClick: (operator: string) => void,
+  segments: RailSegment[],
 ): Layer[] {
   return useMemo(() => {
     const visibleHubs = HUBS.filter(h => isHubVisible(h, state));
     const layers: Layer[] = [];
 
     // ── Rail network (PathLayer) ────────────────────────────────────────
-    if (state.showRailNetwork) {
+    const anyRailOperatorOn = RAIL_OPERATORS.some(
+      op => state.railOperatorVisibility[op] !== false,
+    );
+    if (anyRailOperatorOn) {
       const sr = state.selectedRailOperator;
 
-      const rawSegs = RAIL_SEGMENTS.filter(
+      const rawSegs = segments.filter(
         s => state.railOperatorVisibility[s.operator] !== false,
       );
-      // Wrap with _isRail so tooltip/click can identify these objects
-      const visibleSegs: RailDatum[] = rawSegs.map(s => ({ ...s, _isRail: true as const }));
+
+      // Enrich with color and tooltip fields
+      const visibleSegs: RailDatum[] = rawSegs.map(s => ({
+        ...s,
+        _isRail: true as const,
+        color: RAIL_OPERATOR_COLORS[s.operator] ?? [128, 128, 128],
+        operatorName: RAIL_OPERATOR_NAMES[s.operator] ?? s.operator,
+        routeGroup: s.linea,
+      }));
 
       function railAlpha(s: RailDatum, base: number): number {
         if (!sr) return base;
@@ -63,7 +77,7 @@ export function useLayers(
         if (seg?._isRail) onRailClick(seg.operator);
       }
 
-      // Core segments (solid lines)
+      // Active segments (solid lines)
       layers.push(
         new PathLayer<RailDatum>({
           id: 'rail-core',
@@ -82,14 +96,14 @@ export function useLayers(
         }),
       );
 
-      // Extension / low-certainty segments (dimmer)
+      // Inactive / disused segments (dimmer)
       layers.push(
         new PathLayer<RailDatum>({
-          id: 'rail-extension',
-          data: visibleSegs.filter(s => s.status === 'extension_low_certainty'),
+          id: 'rail-inactive',
+          data: visibleSegs.filter(s => s.status === 'inactive'),
           getPath:  s => s.path,
-          getColor: s => withAlpha(s.color, railAlpha(s, 0.50)),
-          getWidth: s => railWidth(s, 1.75),
+          getColor: s => withAlpha(s.color, railAlpha(s, 0.35)),
+          getWidth: s => railWidth(s, 1.5),
           widthUnits: 'pixels',
           widthMinPixels: 1,
           capRounded: true,
@@ -103,32 +117,64 @@ export function useLayers(
 
     // ── Hub scatter ────────────────────────────────────────────────────────
     const ss = state.selectedState;
+    const sr2 = state.selectedRegion;
+    const regionStates = sr2 ? REGION_STATES[sr2] : null;
+    const isStateActive = (s: string) =>
+      regionStates ? regionStates.includes(s) : (!ss || s === ss);
 
+    const sharedFill = (h: Hub) => {
+      const stateActive = isStateActive(h.state);
+      if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 240 : 80] as RGBA;
+      return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.9 : 0.12);
+    };
+    const sharedLine = (h: Hub) => {
+      const stateActive = isStateActive(h.state);
+      if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 255 : 80] as RGBA;
+      return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.5 : 0.08);
+    };
+    const colorTriggers = [state.selectedHubId, ss, sr2];
+
+    // Ports + terminals: pixel-sized (static across zoom levels)
     layers.push(
       new ScatterplotLayer({
-        id: 'hubs',
-        data: visibleHubs,
+        id: 'hubs-static',
+        data: visibleHubs.filter(h => h.type === 'port' || h.type === 'terminal'),
         getPosition: (h: Hub) => [h.lng, h.lat],
-        getFillColor: (h: Hub) => {
-          const stateActive = !ss || h.state === ss;
-          if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 240 : 80] as RGBA;
-          return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.9 : 0.12);
-        },
-        getLineColor: (h: Hub) => {
-          const stateActive = !ss || h.state === ss;
-          if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 255 : 80] as RGBA;
-          return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.5 : 0.08);
-        },
+        getFillColor: sharedFill,
+        getLineColor: sharedLine,
         getRadius: (h: Hub) =>
-          h.id === state.selectedHubId ? 14_000 : (h.type === 'port' ? 11_000 : 7_000),
+          h.id === state.selectedHubId ? 11 : 8,
+        stroked: true,
+        lineWidthMinPixels: 1.5,
+        lineWidthScale: 1,
+        radiusUnits: 'pixels',
+        pickable: true,
+        updateTriggers: {
+          getFillColor: colorTriggers,
+          getLineColor: colorTriggers,
+          getRadius:    state.selectedHubId,
+        },
+      }),
+    );
+
+    // Other hubs (import nodes, end consumers): geo-sized, scale with zoom
+    layers.push(
+      new ScatterplotLayer({
+        id: 'hubs-geo',
+        data: visibleHubs.filter(h => h.type !== 'port' && h.type !== 'terminal'),
+        getPosition: (h: Hub) => [h.lng, h.lat],
+        getFillColor: sharedFill,
+        getLineColor: sharedLine,
+        getRadius: (h: Hub) =>
+          h.id === state.selectedHubId ? 14_000 : 7_000,
         stroked: true,
         lineWidthMinPixels: 1.5,
         lineWidthScale: 1,
         radiusUnits: 'meters',
         pickable: true,
         updateTriggers: {
-          getFillColor: [state.selectedHubId, ss],
-          getLineColor: [state.selectedHubId, ss],
+          getFillColor: colorTriggers,
+          getLineColor: colorTriggers,
           getRadius:    state.selectedHubId,
         },
       }),
@@ -155,5 +201,10 @@ export function useLayers(
     );
 
     return layers;
-  }, [state.mode, state.selectedHubId, state.selectedState, state.selectedRailOperator, state.hubTypeVisibility, state.showRailNetwork, state.railOperatorVisibility, onRailClick]);
+  }, [
+    state.mode, state.selectedHubId, state.selectedState, state.selectedRegion,
+    state.selectedRailOperator, state.hubTypeVisibility,
+    state.railOperatorVisibility,
+    segments, onRailClick,
+  ]);
 }

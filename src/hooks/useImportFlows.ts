@@ -4,6 +4,7 @@ import { TripsLayer } from '@deck.gl/geo-layers';
 import type { Layer, PickingInfo } from '@deck.gl/core';
 
 import { HUBS, HUB_BY_ID } from '../data/hubs';
+import { REGION_STATES } from '../data/regions';
 import {
   US_ORIGIN,
   US_ORIGIN_ID,
@@ -162,17 +163,20 @@ export function useImportFlows(
       if (obj?._isArc) onArcClick(obj.id);
     }
 
-    // State filter: an arc is state-active if any of its endpoint hubs is in the selected state
+    // State/region filter: an arc is active if any of its endpoint hubs is in the selected state/region
     const ss = state.selectedState;
+    const regionStates = state.selectedRegion ? (REGION_STATES[state.selectedRegion] ?? null) : null;
+    const isHubStateActive = (s: string | undefined) =>
+      s ? (regionStates ? regionStates.includes(s) : (!ss || s === ss)) : false;
     function isStateActive(d: ImportArcDatum): boolean {
-      if (!ss) return true;
+      if (!ss && !regionStates) return true;
       if (d.id.startsWith('branch-')) {
-        const consumerId = d.id.slice(7);   // strip 'branch-'
+        const consumerId = d.id.slice(7);
         const consumerState = HUB_BY_ID[consumerId]?.state;
         const providerState = d.providerNodeId ? HUB_BY_ID[d.providerNodeId]?.state : undefined;
-        return consumerState === ss || providerState === ss;
+        return isHubStateActive(consumerState) || isHubStateActive(providerState);
       }
-      return HUB_BY_ID[d.id]?.state === ss;
+      return isHubStateActive(HUB_BY_ID[d.id]?.state);
     }
 
     // Dim factor: a branch arc is also "active" when its parent import node is active.
@@ -313,5 +317,5 @@ export function useImportFlows(
     );
 
     return layers;
-  }, [importArcs, branchArcs, animTime, hoveredArcId, selectedArcId, state.selectedState, onArcHover, onArcClick]);
+  }, [importArcs, branchArcs, animTime, hoveredArcId, selectedArcId, state.selectedState, state.selectedRegion, onArcHover, onArcClick]);
 }

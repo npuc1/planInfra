@@ -1,31 +1,43 @@
 import { useReducer } from 'react';
-import type { Commodity, ViewMode, UIState, HubType } from '../types';
+import type {
+  Commodity,
+  ViewMode,
+  UIState,
+  HubType,
+  ProductionBubbleMetric,
+  StorageBubbleMetric,
+} from '../types';
 import { RAIL_OPERATORS } from '../data/railNetwork';
 
 type Action =
   | { type: 'SET_COMMODITY'; commodity: Commodity }
-  | { type: 'SET_MODE';      mode: ViewMode }
+  | { type: 'SET_MODE';      mode: ViewMode | null }
   | { type: 'SELECT_HUB';   hubId: string | null }
   | { type: 'SELECT_STATE';  stateName: string | null }
+  | { type: 'SELECT_REGION'; region: string | null }
   | { type: 'SELECT_RAIL_OPERATOR'; operator: string | null }
   | { type: 'TOGGLE_HUB_TYPE'; hubType: HubType }
-  | { type: 'TOGGLE_RAIL_NETWORK' }
-  | { type: 'TOGGLE_RAIL_OPERATOR'; operator: string };
+  | { type: 'TOGGLE_ALL_RAIL_OPERATORS' }
+  | { type: 'TOGGLE_RAIL_OPERATOR'; operator: string }
+  | { type: 'SET_PRODUCTION_BUBBLE_METRIC'; metric: ProductionBubbleMetric }
+  | { type: 'SET_STORAGE_BUBBLE_METRIC'; metric: StorageBubbleMetric };
 
 const INITIAL_STATE: UIState = {
   commodity:            'maize',
   mode:                 'production',
+  productionBubbleMetric: 'total',
+  storageBubbleMetric:  'total',
   selectedHubId:        null,
   selectedState:        null,
+  selectedRegion:       null,
   selectedRailOperator: null,
   hubTypeVisibility: {
-    port:         true,
-    terminal:     true,
-    import_node:  true,
-    end_consumer: true,
+    port:         false,
+    terminal:     false,
+    import_node:  false,
+    end_consumer: false,
   },
-  showRailNetwork: true,
-  railOperatorVisibility: Object.fromEntries(RAIL_OPERATORS.map(op => [op, true])),
+  railOperatorVisibility: Object.fromEntries(RAIL_OPERATORS.map(op => [op, false])),
 };
 
 function reducer(state: UIState, action: Action): UIState {
@@ -34,6 +46,7 @@ function reducer(state: UIState, action: Action): UIState {
     case 'SET_MODE':      return { ...state, mode: action.mode,           selectedHubId: null };
     case 'SELECT_HUB':   return { ...state, selectedHubId: action.hubId };
     case 'SELECT_STATE':         return { ...state, selectedState: action.stateName, selectedHubId: null };
+    case 'SELECT_REGION':        return { ...state, selectedRegion: action.region };
     case 'SELECT_RAIL_OPERATOR': return { ...state, selectedRailOperator: action.operator };
     case 'TOGGLE_HUB_TYPE': return {
       ...state,
@@ -42,15 +55,16 @@ function reducer(state: UIState, action: Action): UIState {
         [action.hubType]: !state.hubTypeVisibility[action.hubType],
       },
     };
-    case 'TOGGLE_RAIL_NETWORK': {
-      const nextShow = !state.showRailNetwork;
+    case 'TOGGLE_ALL_RAIL_OPERATORS': {
+      const allOff = RAIL_OPERATORS.every(op => state.railOperatorVisibility[op] === false);
       return {
         ...state,
-        showRailNetwork: nextShow,
-        // Terminals follow the master rail toggle (one‑way coupling)
+        railOperatorVisibility: Object.fromEntries(
+          RAIL_OPERATORS.map(op => [op, allOff]),
+        ),
         hubTypeVisibility: {
           ...state.hubTypeVisibility,
-          terminal: nextShow,
+          terminal: allOff,
         },
       };
     }
@@ -61,6 +75,10 @@ function reducer(state: UIState, action: Action): UIState {
         [action.operator]: !state.railOperatorVisibility[action.operator],
       },
     };
+    case 'SET_PRODUCTION_BUBBLE_METRIC':
+      return { ...state, productionBubbleMetric: action.metric };
+    case 'SET_STORAGE_BUBBLE_METRIC':
+      return { ...state, storageBubbleMetric: action.metric };
     default: return state;
   }
 }
@@ -70,13 +88,18 @@ export function useUIState() {
   return {
     state,
     setCommodity:         (commodity: Commodity) => dispatch({ type: 'SET_COMMODITY', commodity }),
-    setMode:              (mode: ViewMode)       => dispatch({ type: 'SET_MODE',      mode      }),
+    setMode:              (mode: ViewMode | null) => dispatch({ type: 'SET_MODE',      mode      }),
     selectHub:            (hubId: string | null)   => dispatch({ type: 'SELECT_HUB',   hubId     }),
     selectState:          (stateName: string | null)  => dispatch({ type: 'SELECT_STATE',         stateName }),
+    selectRegion:         (region: string | null)     => dispatch({ type: 'SELECT_REGION',        region }),
     selectRailOperator:   (operator: string | null)   => dispatch({ type: 'SELECT_RAIL_OPERATOR', operator }),
     toggleHubType:        (hubType: HubType)     => dispatch({ type: 'TOGGLE_HUB_TYPE', hubType }),
-    toggleRailNetwork:    ()                     => dispatch({ type: 'TOGGLE_RAIL_NETWORK' }),
+    toggleAllRailOperators: () => dispatch({ type: 'TOGGLE_ALL_RAIL_OPERATORS' }),
     toggleRailOperator:   (operator: string)     => dispatch({ type: 'TOGGLE_RAIL_OPERATOR', operator }),
+    setProductionBubbleMetric: (metric: ProductionBubbleMetric) =>
+      dispatch({ type: 'SET_PRODUCTION_BUBBLE_METRIC', metric }),
+    setStorageBubbleMetric: (metric: StorageBubbleMetric) =>
+      dispatch({ type: 'SET_STORAGE_BUBBLE_METRIC', metric }),
   };
 }
 

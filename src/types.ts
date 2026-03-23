@@ -3,7 +3,13 @@
 export type Commodity = 'maize' | 'beans' | 'wheat' | 'rice';
 
 /** What the choropleth / panel focuses on. */
-export type ViewMode = 'production' | 'consumption' | 'storage';
+export type ViewMode = 'production' | 'storage';
+
+/** Sub-metric when Vista = Producción (bubbles). */
+export type ProductionBubbleMetric = 'total' | 'consumption' | 'balance';
+
+/** Sub-metric when Vista = Almacenamiento (bubbles). */
+export type StorageBubbleMetric = 'total' | 'balance';
 
 /**
  * port        — SCT-registered grain port
@@ -47,12 +53,17 @@ export interface StateBalance {
 
 export interface UIState {
   commodity: Commodity;
-  mode: ViewMode;
+  /** When null, state balance bubbles are hidden. */
+  mode: ViewMode | null;
+  /** Only applies when `mode === 'production'`: total production, consumption, or surplus/deficit. */
+  productionBubbleMetric: ProductionBubbleMetric;
+  /** Only applies when `mode === 'storage'`: total capacity vs. capacity − production. */
+  storageBubbleMetric: StorageBubbleMetric;
   selectedHubId: string | null;
   selectedState: string | null;
+  selectedRegion: string | null;
   selectedRailOperator: string | null;
   hubTypeVisibility: Record<HubType, boolean>;
-  showRailNetwork: boolean;
   railOperatorVisibility: Record<string, boolean>;
 }
 
@@ -76,8 +87,9 @@ export const COMMODITY_LABELS: Record<Commodity, string> = {
 };
 
 export const HUB_TYPE_COLORS: Record<HubType, RGB> = {
-  port:         [ 56, 189, 248],   // sky-400
-  terminal:     [251, 146,  60],   // orange-400
+  // Chosen to avoid confusion with rail line hues (e.g. KCSM/FSUB cyan, Ferrosur orange).
+  port:         [ 37,  99, 235],   // blue-600 — maritime blue, not cyan like many lines
+  terminal:     [217,  70, 239],   // fuchsia-500 — inland hubs vs orange/red rail corridors
   import_node:  [167, 139, 250],   // violet-400
   end_consumer: [ 74, 222, 128],   // green-400
 };
@@ -90,7 +102,17 @@ export const HUB_TYPE_LABELS: Record<HubType, string> = {
 };
 
 export const MODE_LABELS: Record<ViewMode, string> = {
-  production:  'Producción',
+  production: 'Producción',
+  storage:      'Almacenamiento',
+};
+
+export const PRODUCTION_BUBBLE_LABELS: Record<ProductionBubbleMetric, string> = {
+  total:       'Total',
   consumption: 'Consumo',
-  storage:     'Almacenamiento',
+  balance:     'Balance',
+};
+
+export const STORAGE_BUBBLE_LABELS: Record<StorageBubbleMetric, string> = {
+  total:   'Total',
+  balance: 'Balance',
 };

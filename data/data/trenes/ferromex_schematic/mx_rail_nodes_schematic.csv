@@ -1,37 +1,135 @@
-node_id,node_name,node_type,latitude,longitude,source_note
-MXL,Mexicali,city,32.6245,-115.4523,Named on source image
-NOG,Nogales,border_city,31.3012,-110.9381,Named on source image
-HER,Hermosillo,city,29.0892,-110.9613,Named on source image
-GMS,Guaymas,port,27.9193,-110.8976,Named on source image
-TBL,Topolobampo,port,25.6,-109.05,Named on source image
-CUL,Culiacán,city,24.8091,-107.394,Named on source image
-MZT,Mazatlán,port,23.2494,-106.4111,Named on source image
-TEP,Tepic,city,21.5061,-104.894,Named on source image
-GDL,Guadalajara,city,20.6736,-103.344,Named on source image
-MNZ,Manzanillo,port,19.0501,-104.3188,Named on source image
-CJS,Cd. Juárez,border_city,31.6904,-106.4245,Named on source image
-CUU,Chihuahua,city,28.6353,-106.0889,Named on source image
-OJI,Ojinaga,border_city,29.5667,-104.4167,Named on source image
-PNG,Piedras Negras,border_city,28.7,-100.5231,Named on source image
-FTR,Cd. Frontera,city,26.9281,-101.4521,Named on source image
-TRC,Torreón,city,25.5428,-103.4068,Named on source image
-MTY,Monterrey,city,25.6866,-100.3161,Named on source image
-ATM,Altamira,port,22.392,-97.9381,Named on source image
-TAM,Tampico,port,22.216,-97.857,Named on source image
-ZCL,Zacatecas,city,22.7709,-102.5832,Named on source image
-AGS,Aguascalientes,city,21.8853,-102.2916,Named on source image
-SIL,Silao,city,20.9436,-101.427,Named on source image
-IRA,Irapuato,city,20.6767,-101.3563,Named on source image
-PNJ,Pénjamo,city,20.4311,-101.7222,Named on source image
-CDMX,CDMX,city,19.4326,-99.1332,Named on source image
-PUE,Puebla,city,19.0414,-98.2063,Named on source image
-VER,Veracruz,port,19.1738,-96.1342,Named on source image
-COA,Coatzacoalcos,port,18.1345,-94.4586,Named on source image
-SCZ,Salina Cruz,port,16.167,-95.2,Named on source image
-DPN,DP_Norte_Jct,junction,24.95,-102.35,Synthetic junction approximated from unlabeled Derechos de Paso segment
-DPC,DP_Centro_Jct,junction,22.95,-101.0,Synthetic junction approximated from unlabeled Derechos de Paso segment
-FSO,Ferrosur_Oriente_Jct,junction,18.85,-97.3,Synthetic junction approximated from unlabeled Ferrosur split east of Puebla
-CMT,CM_Tabasco_Jct,junction,17.95,-93.2,Synthetic junction approximated from unlabeled Chiapas Mayab segment
-CMC,CM_Central_Chiapas_Jct,junction,16.9,-92.7,Synthetic junction approximated from unlabeled Chiapas Mayab segment
-CMY,CM_Yucatan_Jct,junction,20.97,-89.62,Synthetic junction approximated from unlabeled Chiapas Mayab segment
-CMQ,CM_QRoo_Jct,junction,18.5,-88.3,Synthetic junction approximated from unlabeled Chiapas Mayab segment
+node_id,node_name,node_type,latitude,longitude,operator_primary,source_note
+TIJ,Tijuana,port_city,32.5149,-117.0382,AVCTJT,Pacific border - Vía Corta Tijuana-Tecate
+MXL,Mexicali,border_city,32.6245,-115.4523,FMX,Border crossing
+UB,UB Junction,junction,32.55,-116.10,AVCTJT,Junction between Tijuana and Mexicali on map
+NOG,Nogales,border_city,31.3012,-110.9381,FMX,Sonora border crossing
+AGP,Agua Prieta,border_city,31.3260,-109.5490,FMX,NE Sonora border crossing
+CAN,Cananea,city,30.9500,-110.2900,FMX,Mining city Sonora
+NAC,Nacozari de García,city,30.3700,-109.6800,FMX,Mining area Sonora
+TA_N,TA Junction (Nogales),junction,31.10,-110.50,FMX,Junction TA near Nogales branch
+TA_C,TA Junction (Cananea),junction,30.80,-110.20,FMX,Junction TA near Cananea
+QA,QA Junction,junction,30.00,-110.10,FMX,Junction QA south of Nacozari toward mainline
+HER,Hermosillo,city,29.0892,-110.9613,FMX,Sonora capital
+RO,RO Junction,junction,28.80,-110.70,FMX,Junction near Hermosillo
+GMS,Guaymas,port,27.9193,-110.8976,FMX,Sonora port with anchor symbol
+COB,Ciudad Obregón,city,27.4861,-109.9400,FMX,Southern Sonora
+JNT,Junta,junction,28.25,-109.50,FMX,Named junction 'Junta' on map - key split
+HUA,Huatabampo,city,26.8300,-109.6400,FMX,Southern Sonora coast
+TBL,Topolobampo,port,25.6000,-109.0500,FMX,Sinaloa Pacific port with anchor symbol
+TH,TH Junction,junction,25.70,-108.60,FMX,Junction TH near Topolobampo/Los Mochis
+TC,TC Junction,junction,26.20,-109.20,FMX,Junction TC between Huatabampo and Topolobampo
+CUL,Culiacán,city,24.8091,-107.3940,FMX,Sinaloa capital
+TI,TI Junction (Culiacán N),junction,25.20,-107.80,FMX,Junction TI north of Culiacán
+TI2,TI Junction (Culiacán S),junction,24.50,-107.10,FMX,Junction TI south of Culiacán
+MZT,Mazatlán,port,23.2494,-106.4111,FMX,Sinaloa Pacific port
+DGO,Durango,city,24.0277,-104.6532,LCD,Durango capital - Línea Coahuila Durango
+DC,DC Junction,junction,23.60,-105.30,FMX,Junction DC between Mazatlán and Felipe Pescador corridor
+TEP,Tepic,city,21.5061,-104.8940,FMX,Nayarit capital
+HE,HE Junction,junction,21.80,-104.40,FMX,Junction HE east of Tepic
+GDL,Guadalajara,city,20.6736,-103.3440,FMX,Jalisco capital - major hub
+BD,BD Junction,junction,20.75,-103.15,FMX,Junction BD east of Guadalajara
+MNZ,Manzanillo,port,19.0501,-104.3188,FMX,Colima Pacific port
+CJS,Ciudad Juárez,border_city,31.6904,-106.4245,FMX,Chihuahua border - major crossing
+CUU,Chihuahua,city,28.6353,-106.0889,FMX,Chihuahua capital - major hub
+A_CUU,A Junction (Chihuahua),junction,28.80,-106.10,FMX,Junction A north/south of Chihuahua
+OJI,Ojinaga,border_city,29.5667,-104.4167,FMX,Chihuahua border crossing (Presidio)
+JIM,Jiménez,city,27.1300,-104.9200,FMX,Chihuahua south
+RC,RC Junction,junction,27.00,-105.20,FMX,Junction RC near Jiménez
+RD,RD Junction,junction,26.50,-104.40,FMX,Junction RD between Jiménez and Escalón/Cd. Frontera
+ESC,Escalón,city,26.3500,-103.7500,FMX,Chihuahua-Durango border
+P_JCT,P Junction,junction,27.50,-104.00,FMX,Junction P between Chihuahua and Piedras Negras
+IRA_JCT,IRA Junction,junction,27.80,-103.50,FMX,Junction on Chihuahua-Piedras Negras diagonal
+PNG,Piedras Negras,border_city,28.7000,-100.5231,KCSM,Coahuila border crossing - Eagle Pass
+FTR,Ciudad Frontera,city,26.9281,-101.4521,KCSM,Coahuila industrial
+NLR,Nuevo Laredo,border_city,27.4761,-99.5067,KCSM,Tamaulipas border - major KCSM crossing
+MAT,Matamoros,border_city,25.8697,-97.5028,KCSM,Tamaulipas border crossing
+TRC,Torreón,city,25.5428,-103.4068,FMX,Coahuila/Durango - major junction
+CM4,CM4 Junction,junction,25.55,-103.20,FMX,Junction near Torreón
+RC2,RC2 Junction,junction,25.50,-102.80,FMX,Junction between Torreón and Felipe Pescador
+FEP,Felipe Pescador,junction,24.0500,-102.9000,FMX,Named junction - key crossroads Zacatecas
+DA,DA Junction,junction,24.50,-103.50,LCD,Junction DA near Durango-Torreón link
+SAL,Saltillo,city,25.4217,-100.9930,KCSM,Coahuila capital
+B_SAL,B Junction (Saltillo),junction,25.50,-100.80,KCSM,Junction B near Saltillo
+MTY,Monterrey,city,25.6866,-100.3161,KCSM,Nuevo León capital - major hub
+M_MTY,M Junction (Monterrey),junction,25.70,-100.25,KCSM,Junction M in Monterrey area
+ANP,Antigua P,junction,25.72,-100.18,KCSM,Named 'Antigua P' in Monterrey inset
+BMA,BMA Junction,junction,25.62,-100.12,KCSM,Named BMA in Monterrey inset
+ANM,Antigua M,junction,25.55,-100.22,KCSM,Named 'Antigua M' in Monterrey inset
+BF,BF Junction,junction,26.20,-100.00,KCSM,Junction BF north of Monterrey toward Nuevo Laredo
+R_NLR,R Junction (Nuevo Laredo),junction,27.10,-99.80,KCSM,Junction R south of Nuevo Laredo
+B_FTR,B Junction (Frontera),junction,27.20,-101.00,KCSM,Junction B between Frontera and Saltillo
+ATM,Altamira,port,22.3920,-97.9381,KCSM,Tamaulipas Gulf port
+TAM,Tampico,port,22.2160,-97.8570,KCSM,Tamaulipas Gulf port
+LB,LB Junction,junction,22.80,-98.60,KCSM,Junction LB on route to Tampico
+MA,MA Junction,junction,22.50,-98.00,KCSM,Junction MA near Altamira/Tampico
+SAG,Salinas,city,22.6300,-101.7100,FMX,Named on map - SLP/Ags area
+SLP,San Luis Potosí,city,22.1500,-100.9800,KCSM,SLP capital - important junction
+LA,LA Junction,junction,22.30,-99.80,KCSM,Junction LA between SLP and Tampico
+BC_N,BC Junction (North),junction,22.20,-101.60,FMX,Junction BC north of Aguascalientes-SLP corridor
+CAR,Cárdenas,city,22.0000,-99.6500,KCSM,Named on map - SLP
+NB,NB Junction,junction,21.30,-101.50,FMX,Junction NB south of Aguascalientes
+AGS,Aguascalientes,city,21.8853,-102.2916,FMX,Aguascalientes capital
+CHI,Chicalote,city,22.0300,-102.0800,FMX,Named on map - junction near Aguascalientes
+AHO,Ahorcado,junction,21.0000,-101.1500,FMX,Named on map - key Bajío junction
+IRA,Irapuato,city,20.6767,-101.3563,FMX,Guanajuato - important junction
+IN,IN Junction,junction,20.55,-101.50,FMX,Junction IN near Irapuato
+IO,IO Junction,junction,20.10,-101.80,FMX,Junction IO toward Morelia
+BC_S,BC Junction (Guadalajara),junction,20.60,-102.80,FMX,Junction BC between Guadalajara and Irapuato
+MOR,Morelia,city,19.7006,-101.1844,FMX,Michoacán capital
+PAC,Pachuca,city,20.1167,-98.7333,KCSM,Hidalgo capital
+HC,HC Junction,junction,20.25,-98.90,KCSM,Junction HC near Pachuca
+TUL,Tula,city,20.0500,-99.3500,KCSM,Named on map - Hidalgo
+N_TUL,N Junction,junction,20.15,-99.40,KCSM,Junction N near Tula
+CDMX,CDMX,city,19.4326,-99.1332,FTVM,Capital - major hub
+BUE,Buenavista,station,19.4500,-99.1500,FTVM,Named on map - CDMX station
+TOL,Toluca,city,19.2826,-99.6557,FMX,Estado de México capital
+LEC,Lechería,junction,19.5500,-99.1200,FTVM,Named on map - key CDMX junction
+TEO,Teotihuacán,city,19.6900,-98.8600,FTVM,Named on map
+SH,SH Junction,junction,19.5800,-99.0300,FTVM,Junction SH in Valle de México
+TS,TS Junction,junction,19.5700,-98.9200,FTVM,Junction TS near Teotihuacán
+HA,HA Junction,junction,19.6200,-99.0800,FTVM,Junction HA in Valle de México
+AB_N,AB Junction (North),junction,19.5100,-99.1800,FTVM,Junction AB north
+AB_S,AB Junction (South),junction,19.4800,-99.2000,FTVM,Junction AB south
+ARA,Aragón,station,19.4800,-99.0800,FTVM,Named on map - CDMX area
+JUA_VM,Juárez (VM),station,19.4300,-99.2200,FTVM,Named - Valle de México
+MO1,Morelos 1 (VM),station,19.4500,-99.1900,FTVM,Named - Valle de México
+MO2,Morelos 2 (VM),station,19.5200,-99.1400,FTVM,Named - Valle de México
+H,H Junction (VM),junction,19.5400,-99.0700,FTVM,Junction H in VM
+HB,HB Junction,junction,19.5600,-99.0000,FTVM,Junction HB in VM
+S,S Junction,junction,19.5000,-99.0200,FTVM,Junction S in VM
+V,V Junction,junction,19.4200,-98.8500,FTVM,Junction V south of Teotihuacán area
+VK,VK Junction (South),junction,19.2500,-98.5000,FSR,Junction VK south toward Apizaco
+APZ,Apizaco,city,19.4172,-98.1369,FSR,Tlaxcala - Ferrosur junction
+VB_APZ,VB Junction (Apizaco),junction,19.35,-98.25,FSR,Junction VB near Apizaco
+SA_APZ,SA Junction,junction,19.25,-98.35,FSR,Junction SA south of Apizaco
+PUE,Puebla,city,19.0414,-98.2063,FSR,Puebla capital
+CUA,Cuautla,city,18.8100,-98.9500,FSR,Morelos
+TEH,Tehuacán,city,18.4600,-97.3900,FSR,Southern Puebla
+NE,NE Junction,junction,18.70,-98.50,FSR,Junction NE south of Puebla area
+XAL,Xalapa,city,19.5400,-96.9100,FSR,Veracruz capital
+VER,Veracruz,port,19.1738,-96.1342,FSR,Major Gulf port
+VB_VER,VB Junction (Veracruz),junction,19.30,-96.40,FSR,Junction VB near Veracruz
+TBL2,Tierra Blanca,city,18.4500,-96.3500,FSR,Veracruz key junction
+CF,CF Junction,junction,18.30,-96.10,FSR,Junction CF near Tierra Blanca
+CB,CB Junction,junction,18.25,-95.50,FSR,Junction CB between Tierra Blanca and Coatzacoalcos
+LCA,Lázaro Cárdenas,port,17.9500,-102.2000,FMX,Michoacán Pacific port
+COA,Coatzacoalcos,port,18.1345,-94.4586,FSR,Veracruz Gulf/Isthmus port
+MDA,Medias Aguas,junction,17.8700,-94.7700,FIT,Named on map - key Isthmus junction
+FA,FA Junction,junction,18.00,-94.55,FIT,Junction FA near Coatzacoalcos/Medias Aguas
+IRA3,Ing. Roberto Ayala,junction,17.7500,-94.1500,TM,Named on map - near Isthmus
+PAL,Palenque,city,17.5100,-91.9800,TM,Named on map - Chiapas
+IXT,Ixtepec,junction,16.5600,-95.1000,FIT,Named on map - Oaxaca Isthmus junction
+SCZ,Salina Cruz,port,16.1670,-95.2000,FIT,Oaxaca Pacific Isthmus port
+ARR,Arriaga,city,16.2400,-93.9000,FIT,Named on map - Chiapas
+MAP,Mapastepec,city,15.4400,-92.6000,TM,Named on map - Chiapas coast
+CHD,Ciudad Hidalgo,border_city,14.6800,-92.1500,TM,Named - Chiapas-Guatemala border
+PRO,Progreso,port,21.2800,-89.6600,TM,Yucatán port
+MER,Mérida,city,20.9700,-89.6200,TM,Yucatán capital
+CAN2,Cancún,city,21.1619,-86.8515,TM,Quintana Roo
+PDC,Playa del Carmen,city,20.6296,-87.0739,TM,Quintana Roo
+CAM,Campeche,city,19.8400,-90.5300,TM,Campeche capital
+CHT,Chetumal,city,18.5000,-88.3000,TM,Quintana Roo capital
+VK_S,VK Junction (far south),junction,19.10,-98.50,FSR,Junction VK toward Lázaro Cárdenas corridor
+NB2,NB Junction (Morelia),junction,19.50,-100.50,FMX,Junction between Morelia and CDMX corridor
+M_KCSM,M Junction (KCSM south),junction,24.80,-101.50,KCSM,KCSM junction between Saltillo and SLP
+B_MAT,B Junction (Matamoros),junction,25.50,-98.00,KCSM,Junction on Monterrey-Matamoros line

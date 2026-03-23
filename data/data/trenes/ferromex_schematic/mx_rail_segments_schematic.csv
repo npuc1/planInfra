@@ -1,46 +1,132 @@
 segment_id,operator_id,route_group,from_node_id,to_node_id,segment_order,scenario,status,geometry_type,notes
-FMX_001,FMX,Ferromex Pacífico Norte,MXL,NOG,1,current,active,schematic,Named endpoints; border-adjacent segment kept only on Mexican side
-FMX_002,FMX,Ferromex Pacífico Norte,NOG,HER,2,current,active,schematic,
-FMX_003,FMX,Ferromex Pacífico Norte,HER,GMS,3,current,active,schematic,Port spur
-FMX_004,FMX,Ferromex Pacífico Norte,HER,TBL,4,current,active,schematic,Simplified from inland bend visible in image
-FMX_005,FMX,Ferromex Pacífico Norte,TBL,CUL,5,current,active,schematic,
-FMX_006,FMX,Ferromex Pacífico Norte,CUL,MZT,6,current,active,schematic,
-FMX_007,FMX,Ferromex Pacífico Norte,MZT,TEP,7,current,active,schematic,
-FMX_008,FMX,Ferromex Occidente,TEP,GDL,8,current,active,schematic,
-FMX_009,FMX,Ferromex Occidente,GDL,MNZ,9,current,active,schematic,Port spur
-FMX_010,FMX,Ferromex Bajío,GDL,PNJ,10,current,active,schematic,
-FMX_011,FMX,Ferromex Bajío,PNJ,IRA,11,current,active,schematic,
-FMX_012,FMX,Ferromex Bajío,PNJ,SIL,12,current,active,schematic,
-FMX_013,FMX,Ferromex Bajío-Norte,SIL,AGS,13,current,active,schematic,
-FMX_014,FMX,Ferromex Bajío-Norte,AGS,ZCL,14,current,active,schematic,
-FMX_015,FMX,Ferromex Bajío-Norte,ZCL,TRC,15,current,active,schematic,
-FMX_016,FMX,Ferromex Norte,TRC,CUU,16,current,active,schematic,
-FMX_017,FMX,Ferromex Frontera,CUU,CJS,17,current,active,schematic,
-FMX_018,FMX,Ferromex Frontera,CUU,OJI,18,current,active,schematic,
-FMX_019,FMX,Ferromex Frontera,CUU,PNG,19,current,active,schematic,Diagonal link as shown in source image
-FMX_020,FMX,Ferromex Frontera,PNG,FTR,20,current,active,schematic,
-FMX_021,FMX,Ferromex Noreste,FTR,MTY,21,current,active,schematic,
-FMX_022,FMX,Ferromex Noreste,TRC,MTY,22,current,active,schematic,
-FMX_023,FMX,Ferromex Golfo,MTY,ATM,23,current,active,schematic,
-FMX_024,FMX,Ferromex Golfo,ATM,TAM,24,current,active,schematic,Short port connector
-FMX_025,FMX,Ferromex Centro,PNJ,CDMX,25,current,active,schematic,
-FMX_026,FMX,Ferromex Transversal Norte,CUL,CUU,26,current,active,schematic,Long diagonal corridor simplified from image
-FSR_001,FSR,Ferrosur Centro-Oriente,CDMX,PUE,1,current,active,schematic,
-FSR_002,FSR,Ferrosur Centro-Oriente,PUE,FSO,2,current,active,schematic,Synthetic split node to preserve three-pronged Ferrosur geometry
-FSR_003,FSR,Ferrosur Golfo,FSO,VER,3,current,active,schematic,
-FSR_004,FSR,Ferrosur Istmo,FSO,COA,4,current,active,schematic,
-FSR_005,FSR,Ferrosur Centro-Golfo,CDMX,VER,5,current,active,schematic,Simplified direct corridor visible in image
-FSR_006,FSR,Ferrosur Centro-Istmo,CDMX,FSO,6,current,active,schematic,
-DP_001,DP,Derechos de Paso Norte,TRC,DPN,1,current,active,schematic,Synthetic corridor from source image
-DP_002,DP,Derechos de Paso Norte,DPN,FTR,2,current,active,schematic,
-DP_003,DP,Derechos de Paso Centro,DPN,ZCL,3,current,active,schematic,
-DP_004,DP,Derechos de Paso Centro,DPN,DPC,4,current,active,schematic,
-DP_005,DP,Derechos de Paso Centro,DPC,IRA,5,current,active,schematic,
-DP_006,DP,Derechos de Paso Golfo,DPC,ATM,6,current,active,schematic,
-DP_007,DP,Derechos de Paso Golfo,DPC,TAM,7,current,active,schematic,
-CM_001,CM,Chiapas Mayab Istmo,COA,SCZ,1,current,active,schematic,Main Isthmus corridor
-CM_002,CM,Chiapas Mayab Sureste,COA,CMT,2,current,active,schematic,
-CM_003,CM,Chiapas Mayab Sureste,CMT,CMC,3,current,active,schematic,
-CM_004,CM,Chiapas Mayab Sureste,CMC,SCZ,4,current,active,schematic,Southern return link approximated from image
-CM_005,CM,Chiapas Mayab Península,CMT,CMY,5,current,active,schematic,
-CM_006,CM,Chiapas Mayab Península,CMY,CMQ,6,current,active,schematic,
+AVCTJT_001,AVCTJT,Vía Corta Tijuana-Tecate,TIJ,UB,1,current,active,schematic,Tijuana east toward Tecate/Mexicali - light blue line
+AVCTJT_002,AVCTJT,Vía Corta Tijuana-Tecate,UB,MXL,2,current,active,schematic,UB junction east to Mexicali
+FMX_001,FMX,Pacífico - Sonora Norte,MXL,NOG,1,current,active,schematic,Mexicali south along border to Nogales branch via desert route
+FMX_002,FMX,Pacífico - Sonora Nogales,NOG,TA_N,2,current,active,schematic,Nogales south to TA junction
+FMX_003,FMX,Pacífico - Sonora Cananea,TA_N,CAN,3,current,active,schematic,TA junction east to Cananea mining branch
+FMX_004,FMX,Pacífico - Sonora Agua Prieta,CAN,AGP,4,current,active,schematic,Cananea northeast to Agua Prieta border
+FMX_005,FMX,Pacífico - Sonora Nacozari,TA_C,NAC,5,current,active,schematic,Branch to Nacozari de García mining area
+FMX_006,FMX,Pacífico - Sonora Mainline,TA_N,TA_C,6,current,active,schematic,Connecting TA junctions on Sonora mainline
+FMX_007,FMX,Pacífico - Sonora Mainline,TA_C,QA,7,current,active,schematic,TA junction south to QA junction
+FMX_008,FMX,Pacífico - Sonora Mainline,QA,HER,8,current,active,schematic,QA south to Hermosillo
+FMX_009,FMX,Pacífico - Sonora Costa,HER,RO,9,current,active,schematic,Hermosillo south to RO junction
+FMX_010,FMX,Pacífico - Guaymas Spur,RO,GMS,10,current,active,schematic,RO junction west to Guaymas port
+FMX_011,FMX,Pacífico - Sonora Sur,RO,COB,11,current,active,schematic,RO south to Ciudad Obregón
+FMX_012,FMX,Pacífico - Junta Link,COB,JNT,12,current,active,schematic,Ciudad Obregón east to Junta junction
+FMX_013,FMX,Pacífico - Sonora-Sinaloa,COB,HUA,13,current,active,schematic,Ciudad Obregón south to Huatabampo
+FMX_014,FMX,Pacífico - Sinaloa Norte,HUA,TC,14,current,active,schematic,Huatabampo south to TC junction
+FMX_015,FMX,Pacífico - Topolobampo,TC,TBL,15,current,active,schematic,TC junction west to Topolobampo port
+FMX_016,FMX,Pacífico - Sinaloa Costa,TC,TH,16,current,active,schematic,TC south to TH junction (Los Mochis area)
+FMX_017,FMX,Pacífico - Sinaloa Mainline,TH,TI,17,current,active,schematic,TH south to TI junction north of Culiacán
+FMX_018,FMX,Pacífico - Culiacán,TI,CUL,18,current,active,schematic,TI south to Culiacán
+FMX_019,FMX,Pacífico - Sinaloa Sur,CUL,TI2,19,current,active,schematic,Culiacán south to TI junction
+FMX_020,FMX,Pacífico - Mazatlán,TI2,MZT,20,current,active,schematic,South to Mazatlán port
+FMX_021,FMX,Pacífico - Nayarit,MZT,TEP,21,current,active,schematic,Mazatlán south through Nayarit to Tepic
+FMX_022,FMX,Pacífico - Occidente,TEP,HE,22,current,active,schematic,Tepic east to HE junction
+FMX_023,FMX,Pacífico - Guadalajara,HE,GDL,23,current,active,schematic,HE south to Guadalajara
+FMX_024,FMX,Manzanillo,GDL,MNZ,24,current,active,schematic,Guadalajara south to Manzanillo port
+FMX_025,FMX,Chihuahua - Norte,CJS,A_CUU,25,current,active,schematic,Cd. Juárez south to A junction near Chihuahua
+FMX_026,FMX,Chihuahua - Capital,A_CUU,CUU,26,current,active,schematic,A junction to Chihuahua city
+FMX_027,FMX,Chihuahua - Ojinaga,CUU,OJI,27,current,active,schematic,Chihuahua northeast to Ojinaga border
+FMX_028,FMX,Chihuahua - Junta,JNT,CUU,28,current,active,schematic,Junta junction (Sonora) east to Chihuahua - Chepe/transversal corridor
+FMX_029,FMX,Chihuahua - Sur,CUU,RC,29,current,active,schematic,Chihuahua south to RC junction near Jiménez
+FMX_030,FMX,Chihuahua - Jiménez,RC,JIM,30,current,active,schematic,RC junction to Jiménez
+FMX_031,FMX,Chihuahua - Diagonal PNG,JIM,P_JCT,31,current,active,schematic,Jiménez northeast diagonal toward Piedras Negras
+FMX_032,FMX,Chihuahua - Diagonal PNG 2,P_JCT,PNG,32,current,active,schematic,Continuing diagonal to Piedras Negras border
+FMX_033,FMX,Chihuahua - Escalón,RD,ESC,33,current,active,schematic,RD junction east to Escalón
+FMX_034,FMX,Chihuahua - RD Link,RC,RD,34,current,active,schematic,RC south to RD junction
+FMX_035,FMX,Torreón - Norte,ESC,TRC,35,current,active,schematic,Escalón southeast to Torreón
+FMX_036,FMX,Torreón - Ciudad Frontera,ESC,FTR,36,current,active,schematic,Escalón east to Ciudad Frontera
+FMX_037,FMX,Torreón - CM4,TRC,CM4,37,current,active,schematic,Torreón east to CM4 junction
+FMX_038,FMX,Torreón - Felipe Pescador,TRC,FEP,38,current,active,schematic,Torreón south to Felipe Pescador junction
+FMX_039,FMX,Felipe Pescador - Aguascalientes,FEP,CHI,39,current,active,schematic,Felipe Pescador south to Chicalote/Aguascalientes area
+FMX_040,FMX,Aguascalientes,CHI,AGS,40,current,active,schematic,Chicalote to Aguascalientes
+FMX_041,FMX,Bajío - Salinas,AGS,SAG,41,current,active,schematic,Aguascalientes east to Salinas
+FMX_042,FMX,Bajío - BC North,SAG,BC_N,42,current,active,schematic,Salinas east to BC junction
+FMX_043,FMX,Bajío - Ahorcado,BC_N,AHO,43,current,active,schematic,BC junction south to Ahorcado
+FMX_044,FMX,Bajío - Irapuato,AHO,IRA,44,current,active,schematic,Ahorcado south to Irapuato
+FMX_045,FMX,Bajío - Guadalajara Link,GDL,BD,45,current,active,schematic,Guadalajara east to BD junction
+FMX_046,FMX,Bajío - BD to BC,BD,BC_S,46,current,active,schematic,BD east to BC junction toward Irapuato
+FMX_047,FMX,Bajío - Irapuato West,BC_S,IRA,47,current,active,schematic,BC junction east to Irapuato
+FMX_048,FMX,Bajío - IN Junction,IRA,IN,48,current,active,schematic,Irapuato south to IN junction
+FMX_049,FMX,Bajío - Morelia,IN,IO,49,current,active,schematic,IN south to IO junction
+FMX_050,FMX,Bajío - Morelia City,IO,MOR,50,current,active,schematic,IO east to Morelia
+FMX_051,FMX,Lázaro Cárdenas,MOR,LCA,51,current,active,schematic,Morelia south to Lázaro Cárdenas Pacific port
+FMX_052,FMX,Centro - CDMX,AHO,N_TUL,52,current,active,schematic,Ahorcado southeast toward Tula/CDMX corridor
+FMX_053,FMX,Centro - Toluca,TOL,CDMX,53,current,active,schematic,Toluca east to CDMX
+FMX_054,FMX,Durango Link South,DC,MZT,54,current,active,schematic,DC junction southwest to Mazatlán area - connects Durango route to Pacific
+FMX_055,FMX,NB - Irapuato South,IN,NB,55,current,active,schematic,IN junction to NB junction
+FMX_056,FMX,Felipe Pescador - DA,FEP,DA,56,current,active,schematic,Felipe Pescador northwest to DA junction
+LCD_001,LCD,Línea Coahuila Durango,TRC,DA,1,current,active,schematic,Torreón west to DA junction - orange line
+LCD_002,LCD,Línea Coahuila Durango,DA,DGO,2,current,active,schematic,DA junction southwest to Durango
+KCSM_001,KCSM,Noreste - Nuevo Laredo,NLR,R_NLR,1,current,active,schematic,Nuevo Laredo south to R junction
+KCSM_002,KCSM,Noreste - Monterrey,R_NLR,BF,2,current,active,schematic,R junction south to BF junction north of Monterrey
+KCSM_003,KCSM,Noreste - Monterrey City,BF,MTY,3,current,active,schematic,BF south to Monterrey
+KCSM_004,KCSM,Noreste - Piedras Negras,PNG,B_FTR,4,current,active,schematic,Piedras Negras south
+KCSM_005,KCSM,Noreste - Frontera,B_FTR,FTR,5,current,active,schematic,Junction to Ciudad Frontera
+KCSM_006,KCSM,Noreste - Saltillo,B_FTR,SAL,6,current,active,schematic,Frontera area south to Saltillo
+KCSM_007,KCSM,Noreste - Saltillo-Monterrey,SAL,MTY,7,current,active,schematic,Saltillo east to Monterrey
+KCSM_008,KCSM,Noreste - Matamoros,MTY,B_MAT,8,current,active,schematic,Monterrey east toward Matamoros
+KCSM_009,KCSM,Noreste - Matamoros 2,B_MAT,MAT,9,current,active,schematic,Junction to Matamoros border
+KCSM_010,KCSM,Centro - Saltillo South,SAL,M_KCSM,10,current,active,schematic,Saltillo south toward SLP
+KCSM_011,KCSM,Centro - SLP,M_KCSM,SLP,11,current,active,schematic,Junction south to San Luis Potosí
+KCSM_012,KCSM,Centro - Torreón Link,CM4,SAL,12,current,active,schematic,Torreón area east to Saltillo on KCSM route
+KCSM_013,KCSM,Golfo - Tampico,SLP,LA,13,current,active,schematic,SLP east to LA junction
+KCSM_014,KCSM,Golfo - Cárdenas,LA,CAR,14,current,active,schematic,LA east to Cárdenas
+KCSM_015,KCSM,Golfo - Altamira,CAR,MA,15,current,active,schematic,Cárdenas east to MA junction
+KCSM_016,KCSM,Golfo - Altamira Port,MA,ATM,16,current,active,schematic,MA to Altamira port
+KCSM_017,KCSM,Golfo - Tampico Port,MA,TAM,17,current,active,schematic,MA to Tampico port
+KCSM_018,KCSM,Golfo - LB Junction,LB,MA,18,current,active,schematic,LB junction south to MA
+KCSM_019,KCSM,Centro Sur - Ahorcado,SLP,AHO,19,current,active,schematic,SLP south to Ahorcado junction - shared corridor
+KCSM_020,KCSM,Centro Sur - Pachuca,SLP,HC,20,current,active,schematic,SLP south toward Pachuca
+KCSM_021,KCSM,Centro Sur - Pachuca City,HC,PAC,21,current,active,schematic,HC junction to Pachuca
+KCSM_022,KCSM,Centro Sur - Tula,HC,N_TUL,22,current,active,schematic,HC south to N junction near Tula
+KCSM_023,KCSM,Centro Sur - Tula City,N_TUL,TUL,23,current,active,schematic,N junction to Tula
+KCSM_024,KCSM,Centro Sur - CDMX,N_TUL,LEC,24,current,active,schematic,N junction south to Lechería/CDMX area
+FTVM_001,FTVM,Valle de México - Lechería Hub,LEC,HA,1,current,active,schematic,Lechería to HA junction - yellow network
+FTVM_002,FTVM,Valle de México - Aragón,HA,ARA,2,current,active,schematic,HA east to Aragón
+FTVM_003,FTVM,Valle de México - SH,HA,SH,3,current,active,schematic,HA to SH junction
+FTVM_004,FTVM,Valle de México - Teotihuacán,SH,TS,4,current,active,schematic,SH east to TS near Teotihuacán
+FTVM_005,FTVM,Valle de México - Teotihuacán City,TS,TEO,5,current,active,schematic,TS to Teotihuacán
+FTVM_006,FTVM,Valle de México - AB North,LEC,AB_N,6,current,active,schematic,Lechería south to AB junction
+FTVM_007,FTVM,Valle de México - Morelos,AB_N,MO2,7,current,active,schematic,AB to Morelos station
+FTVM_008,FTVM,Valle de México - AB South,AB_N,AB_S,8,current,active,schematic,AB north to AB south
+FTVM_009,FTVM,Valle de México - Juárez,AB_S,JUA_VM,9,current,active,schematic,AB south to Juárez station
+FTVM_010,FTVM,Valle de México - Buenavista,AB_S,BUE,10,current,active,schematic,AB south to Buenavista station
+FTVM_011,FTVM,Valle de México - CDMX,BUE,CDMX,11,current,active,schematic,Buenavista to CDMX center
+FTVM_012,FTVM,Valle de México - South Link,CDMX,V,12,current,active,schematic,CDMX south to V junction
+FTVM_013,FTVM,Valle de México - HB,SH,HB,13,current,active,schematic,SH to HB junction
+FTVM_014,FTVM,Valle de México - S,HB,S,14,current,active,schematic,HB to S junction
+FTVM_015,FTVM,Valle de México - V,S,V,15,current,active,schematic,S south to V junction toward Puebla corridor
+FSR_001,FSR,Centro - Apizaco,V,VK,1,current,active,schematic,V junction east to VK junction
+FSR_002,FSR,Centro - Apizaco 2,VK,APZ,2,current,active,schematic,VK east to Apizaco
+FSR_003,FSR,Centro - Puebla,APZ,VB_APZ,3,current,active,schematic,Apizaco south to VB junction
+FSR_004,FSR,Centro - Puebla 2,VB_APZ,PUE,4,current,active,schematic,VB south to Puebla
+FSR_005,FSR,Oriente - Xalapa,APZ,XAL,5,current,active,schematic,Apizaco northeast to Xalapa branch
+FSR_006,FSR,Oriente - Veracruz Norte,XAL,VB_VER,6,current,active,schematic,Xalapa south to VB junction near Veracruz
+FSR_007,FSR,Oriente - Veracruz,VB_VER,VER,7,current,active,schematic,VB to Veracruz port
+FSR_008,FSR,Sur - Cuautla,PUE,CUA,8,current,active,schematic,Puebla west to Cuautla
+FSR_009,FSR,Sur - Tehuacán,PUE,TEH,9,current,active,schematic,Puebla south to Tehuacán
+FSR_010,FSR,Sur - Tierra Blanca,TEH,TBL2,10,current,active,schematic,Tehuacán east to Tierra Blanca junction
+FSR_011,FSR,Golfo - Tierra Blanca-Veracruz,TBL2,VER,11,current,active,schematic,Tierra Blanca north to Veracruz
+FSR_012,FSR,Golfo - CF Junction,TBL2,CF,12,current,active,schematic,Tierra Blanca south to CF junction
+FSR_013,FSR,Istmo Norte - CB,CF,CB,13,current,active,schematic,CF southeast to CB junction
+FSR_014,FSR,Istmo Norte - Coatzacoalcos,CB,COA,14,current,active,schematic,CB east to Coatzacoalcos
+FSR_015,FSR,NE Junction,NE,CUA,15,current,active,schematic,NE junction to Cuautla area
+FSR_016,FSR,Lázaro Cárdenas Link,VK_S,LCA,16,current,active,schematic,Southern VK junction toward Lázaro Cárdenas
+FIT_001,FIT,Istmo - Coatzacoalcos,COA,FA,1,current,active,schematic,Coatzacoalcos to FA junction - dark navy line
+FIT_002,FIT,Istmo - Medias Aguas,FA,MDA,2,current,active,schematic,FA to Medias Aguas junction
+FIT_003,FIT,Istmo - Salina Cruz,MDA,IXT,3,current,active,schematic,Medias Aguas south to Ixtepec
+FIT_004,FIT,Istmo - Salina Cruz 2,IXT,SCZ,4,current,active,schematic,Ixtepec west to Salina Cruz port
+FIT_005,FIT,Istmo - Arriaga,IXT,ARR,5,current,active,schematic,Ixtepec southeast to Arriaga
+TM_001,TM,Tren Maya - Palenque,IRA3,PAL,1,current,active,schematic,Ing. Roberto Ayala east to Palenque - dark olive line
+TM_002,TM,Tren Maya - Isthmus Link,COA,IRA3,2,current,active,schematic,Coatzacoalcos area to Ing. Roberto Ayala
+TM_003,TM,Tren Maya - Campeche,PAL,CAM,3,current,active,schematic,Palenque east to Campeche
+TM_004,TM,Tren Maya - Mérida,CAM,MER,4,current,active,schematic,Campeche north to Mérida
+TM_005,TM,Tren Maya - Progreso,MER,PRO,5,current,active,schematic,Mérida north to Progreso port
+TM_006,TM,Tren Maya - Cancún,MER,CAN2,6,current,active,schematic,Mérida east to Cancún
+TM_007,TM,Tren Maya - Playa del Carmen,CAN2,PDC,7,current,active,schematic,Cancún south to Playa del Carmen
+TM_008,TM,Tren Maya - Chetumal,PDC,CHT,8,current,active,schematic,Playa del Carmen south to Chetumal
+TM_009,TM,Tren Maya - Chetumal-Campeche,CHT,CAM,9,current,active,schematic,Chetumal west to Campeche completing peninsula loop
+TM_010,TM,Tren Maya - Chiapas,ARR,MAP,10,current,active,schematic,Arriaga southeast along Chiapas coast to Mapastepec
+TM_011,TM,Tren Maya - Guatemala Border,MAP,CHD,11,current,active,schematic,Mapastepec southeast to Ciudad Hidalgo border

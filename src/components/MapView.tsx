@@ -1,12 +1,27 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import DeckGL from '@deck.gl/react';
 import { Map } from 'react-map-gl/maplibre';
 import type { PickingInfo, MapViewState } from '@deck.gl/core';
+import { FlyToInterpolator } from '@deck.gl/core';
 import type { Layer } from '@deck.gl/core';
+import type { Map as MaplibreMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-import { COMMODITY_LABELS, HUB_TYPE_COLORS, HUB_TYPE_LABELS, MODE_LABELS, type Commodity, type Hub, type ViewMode } from '../types';
-import { HUB_BY_ID, HUB_STATES } from '../data/hubs';
+import {
+  COMMODITY_LABELS,
+  HUB_TYPE_COLORS,
+  HUB_TYPE_LABELS,
+  MODE_LABELS,
+  PRODUCTION_BUBBLE_LABELS,
+  STORAGE_BUBBLE_LABELS,
+  type Commodity,
+  type Hub,
+  type ProductionBubbleMetric,
+  type StorageBubbleMetric,
+  type ViewMode,
+} from '../types';
+import { HUB_BY_ID } from '../data/hubs';
+import { REGIONS, REGION_STATES, REGION_VIEW } from '../data/regions';
 import {
   US_ORIGIN_ID,
   IMPORT_NODE_VOLUMES,
@@ -16,10 +31,33 @@ import {
 import { STATE_BALANCE } from '../data/stateBalance';
 import { RAIL_OPERATOR_COLORS, RAIL_OPERATOR_NAMES } from '../data/railNetwork';
 
-// ─── Constants ─────────────────────────────────────────────────────────────────
+// ─── Basemap definitions ───────────────────────────────────────────────────────
 
-// CARTO Dark Matter — free, no API key required
-const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
+export type BasemapId = 'dark' | 'light' | 'gray';
+
+const GRAYSCALE_STYLE = {
+  version: 8 as const,
+  sources: {
+    otm: {
+      type: 'raster' as const,
+      tiles: ['https://tile.opentopomap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '© OpenTopoMap (CC-BY-SA) | © OpenStreetMap contributors',
+    },
+  },
+  layers: [{
+    id: 'otm',
+    type: 'raster' as const,
+    source: 'otm',
+    paint: { 'raster-saturation': -1 },
+  }],
+};
+
+export const BASEMAP_STYLES: Record<BasemapId, string | typeof GRAYSCALE_STYLE> = {
+  dark:  'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+  light: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+  gray:  GRAYSCALE_STYLE,
+};
 
 const INITIAL_VIEW_STATE: MapViewState = {
   longitude: -101.5,
@@ -28,6 +66,72 @@ const INITIAL_VIEW_STATE: MapViewState = {
   pitch: 30,
   bearing: 0,
 };
+
+/** MapLibre built-in UI (controls, cooperative gestures, etc.) */
+const MAPLIBRE_LOCALE_ES: Record<string, string> = {
+  'AttributionControl.ToggleAttribution': 'Mostrar u ocultar atribución',
+  'AttributionControl.MapFeedback': 'Comentarios sobre el mapa',
+  'FullscreenControl.Enter': 'Pantalla completa',
+  'FullscreenControl.Exit': 'Salir de pantalla completa',
+  'GeolocateControl.FindMyLocation': 'Mostrar mi ubicación',
+  'GeolocateControl.LocationNotAvailable': 'Ubicación no disponible',
+  'LogoControl.Title': 'Logotipo de MapLibre',
+  'Map.Title': 'Mapa',
+  'Marker.Title': 'Marcador en el mapa',
+  'NavigationControl.ResetBearing': 'Arrastra para rotar el mapa; clic para restablecer el norte',
+  'NavigationControl.ZoomIn': 'Acercar',
+  'NavigationControl.ZoomOut': 'Alejar',
+  'Popup.Close': 'Cerrar ventana',
+  'ScaleControl.Feet': 'pies',
+  'ScaleControl.Meters': 'm',
+  'ScaleControl.Kilometers': 'km',
+  'ScaleControl.Miles': 'mi',
+  'ScaleControl.NauticalMiles': 'nm',
+  'GlobeControl.Enable': 'Activar vista de globo',
+  'GlobeControl.Disable': 'Desactivar vista de globo',
+  'TerrainControl.Enable': 'Activar relieve',
+  'TerrainControl.Disable': 'Desactivar relieve',
+  'CooperativeGesturesHandler.WindowsHelpText': 'Usa Ctrl + rueda para acercar o alejar el mapa',
+  'CooperativeGesturesHandler.MacHelpText': 'Usa ⌘ + rueda para acercar o alejar el mapa',
+  'CooperativeGesturesHandler.MobileHelpText': 'Usa dos dedos para mover el mapa',
+};
+
+/** Prefer Spanish `name:es` from OpenMapTiles-style data (CARTO basemap). */
+const LABEL_ES_COALESCE = ['coalesce', ['get', 'name:es'], ['get', 'name'], ['get', 'name_en']] as const;
+
+const LABEL_ES_COALESCE_NO_EN = ['coalesce', ['get', 'name:es'], ['get', 'name']] as const;
+
+function localizeCartoTextField(field: unknown): unknown {
+  if (field === '{name_en}') return LABEL_ES_COALESCE;
+  if (field === '{name}') return LABEL_ES_COALESCE_NO_EN;
+  if (field === '{housenumber}') return field;
+  if (field && typeof field === 'object' && 'stops' in field) {
+    const o = field as { stops: [number, unknown][] };
+    return {
+      ...field,
+      stops: o.stops.map(([z, v]) => [z, localizeCartoTextField(v)] as [number, unknown]),
+    };
+  }
+  return field;
+}
+
+function applySpanishBasemapLabels(map: MaplibreMap) {
+  const style = map.getStyle();
+  if (!style?.layers) return;
+  for (const layer of style.layers) {
+    if (layer.type !== 'symbol') continue;
+    const tf = layer.layout?.['text-field' as keyof typeof layer.layout];
+    if (tf === undefined) continue;
+    const next = localizeCartoTextField(tf);
+    if (next !== tf) {
+      try {
+        map.setLayoutProperty(layer.id, 'text-field', next as never);
+      } catch {
+        /* layer not ready */
+      }
+    }
+  }
+}
 
 // ─── Tooltip ──────────────────────────────────────────────────────────────────
 
@@ -39,7 +143,14 @@ const TOOLTIP_BASE_STYLE = {
   pointerEvents: 'none',
 } as const;
 
-function getTooltipContent(info: PickingInfo): { html: string; style: object } | null {
+function getTooltipContent(
+  info: PickingInfo,
+  bubbleUi: {
+    mode: ViewMode;
+    productionBubbleMetric: ProductionBubbleMetric;
+    storageBubbleMetric: StorageBubbleMetric;
+  } | null,
+): { html: string; style: object } | null {
   if (!info.object) return null;
   const obj = info.object as Record<string, unknown>;
 
@@ -66,15 +177,46 @@ function getTooltipContent(info: PickingInfo): { html: string; style: object } |
   }
 
   // ── State bubble ───────────────────────────────────────────────────────────
-  if (obj._isBubble) {
-    const state = String(obj.state);
-    const prod  = (obj.productionTons as number).toLocaleString('es-MX');
+  if (obj._isBubble && bubbleUi) {
+    const stateName = String(obj.state);
+    const prodN = obj.productionTons as number;
+    const demN = obj.demandTons as number;
+    const storN = obj.storageCapacityTons as number;
+    const { mode: bm, productionBubbleMetric, storageBubbleMetric } = bubbleUi;
+
+    let line = '';
+    let border = '1px solid rgba(255,255,255,0.15)';
+
+    if (bm === 'production') {
+      if (productionBubbleMetric === 'total') {
+        line = `<span style="opacity:0.65">Producción:&nbsp;</span><strong>${prodN.toLocaleString('es-MX')} T.M.</strong>`;
+      } else if (productionBubbleMetric === 'consumption') {
+        line = `<span style="opacity:0.65">Consumo estimado:&nbsp;</span><strong>${demN.toLocaleString('es-MX')} T.M.</strong>`;
+      } else {
+        const net = prodN - demN;
+        const sign = net >= 0 ? '+' : '−';
+        const abs = Math.abs(net).toLocaleString('es-MX');
+        border = net >= 0 ? '1px solid rgba(74,222,128,0.45)' : '1px solid rgba(248,113,113,0.45)';
+        line = `<span style="opacity:0.65">Producción − consumo:&nbsp;</span><strong>${sign}${abs} T.M.</strong>`;
+      }
+    } else if (bm === 'storage') {
+      if (storageBubbleMetric === 'balance') {
+        const net = storN - prodN;
+        const sign = net >= 0 ? '+' : '−';
+        const abs = Math.abs(net).toLocaleString('es-MX');
+        border = net >= 0 ? '1px solid rgba(74,222,128,0.45)' : '1px solid rgba(248,113,113,0.45)';
+        line = `<span style="opacity:0.65">Almacén − producción:&nbsp;</span><strong>${sign}${abs} T.M.</strong>`;
+      } else {
+        line = `<span style="opacity:0.65">Capacidad de almacenamiento:&nbsp;</span><strong>${storN.toLocaleString('es-MX')} T.M.</strong>`;
+      }
+    }
+
     return {
       html: `<div style="font-family:system-ui;font-size:12px;line-height:1.6">
-        <strong style="display:block;font-size:13px;margin-bottom:2px">${state}</strong>
-        <span style="opacity:0.65">Producción:&nbsp;</span><strong>${prod} T.M.</strong>
+        <strong style="display:block;font-size:13px;margin-bottom:2px">${stateName}</strong>
+        ${line}
       </div>`,
-      style: { ...TOOLTIP_BASE_STYLE, border: '1px solid rgba(255,255,255,0.15)' },
+      style: { ...TOOLTIP_BASE_STYLE, border },
     };
   }
 
@@ -115,25 +257,43 @@ function fmtTons(n: number): string {
 
 const TOTAL_IMPORT_TONS = Object.values(IMPORT_NODE_VOLUMES).reduce((a, b) => a + b, 0);
 
+function StorageMinusProdRow({ storageTons, productionTons }: { storageTons: number; productionTons: number }) {
+  const net = storageTons - productionTons;
+  const netColor = net >= 0 ? 'rgb(74,222,128)' : 'rgb(248,113,113)';
+  const netText = net >= 0 ? `+${fmtTons(net)}` : `−${fmtTons(Math.abs(net))}`;
+  return (
+    <div className="col-span-2 bg-slate-800/60 rounded-md px-2.5 py-2">
+      <p className="text-[10px] text-slate-400 uppercase tracking-wider leading-none mb-1">
+        Almacén − producción
+      </p>
+      <p className="text-sm font-bold leading-tight" style={{ color: netColor }}>{netText}</p>
+    </div>
+  );
+}
+
 interface InfoTileProps {
   selectedHubId: string | null;
   selectedArcId: string | null;
   selectedRailOperator: string | null;
   selectedState: string | null;
+  selectedRegion: string | null;
   commodity: Commodity;
-  mode: ViewMode;
+  mode: ViewMode | null;
+  productionBubbleMetric: ProductionBubbleMetric;
+  storageBubbleMetric: StorageBubbleMetric;
   onClearHub: () => void;
   onClearArc: () => void;
   onClearRailOperator: () => void;
   onClearState: () => void;
+  onClearRegion: () => void;
 }
 
 function InfoTile({
-  selectedHubId, selectedArcId, selectedRailOperator, selectedState,
-  commodity, mode,
-  onClearHub, onClearArc, onClearRailOperator, onClearState,
+  selectedHubId, selectedArcId, selectedRailOperator, selectedState, selectedRegion,
+  commodity, mode, productionBubbleMetric, storageBubbleMetric,
+  onClearHub, onClearArc, onClearRailOperator, onClearState, onClearRegion,
 }: InfoTileProps) {
-  const hasAny = selectedArcId || selectedRailOperator || selectedHubId || selectedState;
+  const hasAny = selectedArcId || selectedRailOperator || selectedHubId || selectedState || selectedRegion;
   if (!hasAny) return null;
 
   // ── US origin ────────────────────────────────────────────────────────────
@@ -214,7 +374,6 @@ function InfoTile({
           Red ferroviaria · {selectedRailOperator}
         </p>
         <p className="text-sm font-bold text-white leading-tight">{name}</p>
-        <p className="text-xs text-slate-400 mt-0.5">Clic en cualquier tramo para más contexto</p>
       </TileShell>
     );
   }
@@ -248,7 +407,7 @@ function InfoTile({
     const row = STATE_BALANCE.find(r => r.state === selectedState && r.commodity === commodity);
     const [cr, cg, cb] = [148, 163, 184]; // slate-400
     const accent = `rgb(${cr},${cg},${cb})`;
-    const modeLabel = MODE_LABELS[mode];
+    const modeLabel = mode ? MODE_LABELS[mode] : 'Ninguna';
     const surplus = row?.surplusDeficitTons ?? 0;
     const surplusColor = surplus >= 0 ? 'rgb(74,222,128)' : 'rgb(248,113,113)';
     const surplusLabel = surplus >= 0 ? `+${fmtTons(surplus)} superávit` : `${fmtTons(Math.abs(surplus))} déficit`;
@@ -258,7 +417,15 @@ function InfoTile({
           Balance estatal · {COMMODITY_LABELS[commodity]}
         </p>
         <p className="text-sm font-bold text-white leading-tight">{selectedState}</p>
-        <p className="text-xs text-slate-400 mt-0.5">Vista: {modeLabel}</p>
+        <p className="text-xs text-slate-400 mt-0.5">
+          Vista: {modeLabel}
+          {mode === 'production' && (
+            <span className="text-slate-500"> · {PRODUCTION_BUBBLE_LABELS[productionBubbleMetric]}</span>
+          )}
+          {mode === 'storage' && (
+            <span className="text-slate-500"> · {STORAGE_BUBBLE_LABELS[storageBubbleMetric]}</span>
+          )}
+        </p>
         {row ? (
           <>
             <div className="mt-2.5 grid grid-cols-2 gap-1.5">
@@ -269,11 +436,50 @@ function InfoTile({
                 <p className="text-[10px] text-slate-400 uppercase tracking-wider leading-none mb-1">Balance</p>
                 <p className="text-sm font-bold leading-tight" style={{ color: surplusColor }}>{surplusLabel}</p>
               </div>
+              {mode === 'storage' && storageBubbleMetric === 'balance' && (
+                <StorageMinusProdRow
+                  storageTons={row.storageCapacityTons}
+                  productionTons={row.productionTons}
+                />
+              )}
             </div>
           </>
         ) : (
           <p className="text-xs text-slate-500 mt-2">Sin datos para este grano.</p>
         )}
+      </TileShell>
+    );
+  }
+
+  // ── Region balance ────────────────────────────────────────────────────────
+  if (selectedRegion) {
+    const members = REGION_STATES[selectedRegion] ?? [];
+    const rows = STATE_BALANCE.filter(r => members.includes(r.state) && r.commodity === commodity);
+    const production = rows.reduce((s, r) => s + r.productionTons, 0);
+    const demand     = rows.reduce((s, r) => s + r.demandTons, 0);
+    const storage    = rows.reduce((s, r) => s + r.storageCapacityTons, 0);
+    const balance    = rows.reduce((s, r) => s + r.surplusDeficitTons, 0);
+    const balanceColor = balance >= 0 ? 'rgb(74,222,128)' : 'rgb(248,113,113)';
+    const balanceLabel = balance >= 0
+      ? `+${fmtTons(balance)} superávit`
+      : `−${fmtTons(Math.abs(balance))} déficit`;
+    const accent = 'rgb(148,163,184)';
+    return (
+      <TileShell accentColor={accent} onClose={onClearRegion}>
+        <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: accent }}>
+          Región · {COMMODITY_LABELS[commodity]}
+        </p>
+        <p className="text-sm font-bold text-white leading-tight">{selectedRegion}</p>
+        <p className="text-xs text-slate-400 mt-0.5">{members.length} estados</p>
+        <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+          <InfoStat label="Producción" value={fmtTons(production)} />
+          <InfoStat label="Consumo est." value={fmtTons(demand)} />
+          <InfoStat label="Almacenamiento" value={fmtTons(storage)} />
+          <div className="bg-slate-800/60 rounded-md px-2.5 py-2">
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider leading-none mb-1">Balance neto</p>
+            <p className="text-sm font-bold leading-tight" style={{ color: balanceColor }}>{balanceLabel}</p>
+          </div>
+        </div>
       </TileShell>
     );
   }
@@ -327,12 +533,17 @@ interface MapViewProps {
   onClearHub: () => void;
   selectedState: string | null;
   onSelectState: (stateName: string | null) => void;
+  selectedRegion: string | null;
+  onSelectRegion: (region: string | null) => void;
   selectedHubId: string | null;
   selectedArcId: string | null;
   selectedRailOperator: string | null;
   onClearRailOperator: () => void;
   commodity: Commodity;
-  mode: ViewMode;
+  mode: ViewMode | null;
+  productionBubbleMetric: ProductionBubbleMetric;
+  storageBubbleMetric: StorageBubbleMetric;
+  basemap: BasemapId;
 }
 
 export function MapView({
@@ -342,14 +553,90 @@ export function MapView({
   onClearHub,
   selectedState,
   onSelectState,
+  selectedRegion,
+  onSelectRegion,
   selectedHubId,
   selectedArcId,
   selectedRailOperator,
   onClearRailOperator,
   commodity,
   mode,
+  productionBubbleMetric,
+  storageBubbleMetric,
+  basemap,
 }: MapViewProps) {
   const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE);
+  const mapRef       = useRef<MaplibreMap | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMapLoad = useCallback((e: { target: MaplibreMap }) => {
+    mapRef.current = e.target;
+    applySpanishBasemapLabels(e.target);
+    e.target.on('style.load', () => applySpanishBasemapLabels(e.target));
+  }, []);
+
+  // Export: flag triggers a deck.gl re-render; we capture inside onAfterRender
+  // while the WebGL buffer is still populated (before browser compositor clears it).
+  const exportPendingRef = useRef(false);
+  const [, setExportTick] = useState(0);
+
+  const handleExport = useCallback(() => {
+    exportPendingRef.current = true;
+    setExportTick(t => t + 1);
+  }, []);
+
+  const handleAfterRender = useCallback(() => {
+    if (!exportPendingRef.current) return;
+    exportPendingRef.current = false;
+
+    const map = mapRef.current;
+    if (!map || !containerRef.current) return;
+
+    const mapCanvas  = map.getCanvas();
+    const w = mapCanvas.width;
+    const h = mapCanvas.height;
+
+    const allCanvases = Array.from(containerRef.current.querySelectorAll('canvas'));
+    const deckCanvas  = allCanvases.find(c => c !== mapCanvas) ?? null;
+
+    const out = document.createElement('canvas');
+    out.width  = w;
+    out.height = h;
+    const ctx  = out.getContext('2d')!;
+    ctx.drawImage(mapCanvas, 0, 0);
+    if (deckCanvas) ctx.drawImage(deckCanvas, 0, 0, w, h);
+
+    out.toBlob(blob => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = `mapa_granos_${new Date().toISOString().slice(0, 10)}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  }, []);
+
+  useEffect(() => {
+    if (!selectedRegion) return;
+    const v = REGION_VIEW[selectedRegion];
+    if (!v) return;
+    setViewState(prev => ({
+      ...prev,
+      ...v,
+      transitionDuration: 800,
+      transitionInterpolator: new FlyToInterpolator(),
+    }));
+  }, [selectedRegion]);
+
+  const getTooltip = useCallback(
+    (info: PickingInfo) =>
+      getTooltipContent(
+        info,
+        mode ? { mode, productionBubbleMetric, storageBubbleMetric } : null,
+      ),
+    [mode, productionBubbleMetric, storageBubbleMetric],
+  );
 
   const handleClick = useCallback(
     (info: PickingInfo) => {
@@ -368,41 +655,45 @@ export function MapView({
   );
 
   return (
-    <div className="flex-1 relative overflow-hidden">
+    <div ref={containerRef} className="flex-1 relative overflow-hidden">
       <DeckGL
         viewState={viewState}
         onViewStateChange={({ viewState: vs }) => setViewState(vs as MapViewState)}
         controller={true}
         layers={layers}
         onClick={handleClick}
-        getTooltip={getTooltipContent}
+        getTooltip={getTooltip}
         style={{ position: 'absolute', inset: '0' }}
+        onAfterRender={handleAfterRender}
       >
         <Map
-          mapStyle={MAP_STYLE}
+          mapStyle={BASEMAP_STYLES[basemap] as never}
           reuseMaps
+          locale={MAPLIBRE_LOCALE_ES}
+          onLoad={handleMapLoad}
+          preserveDrawingBuffer={true}
         />
       </DeckGL>
 
-      {/* ── State filter ── */}
+      {/* ── Region filter ── */}
       <div className="absolute top-3 right-3 z-10 bg-slate-900/90 backdrop-blur-sm border border-slate-700 rounded-lg px-3 py-2 shadow-lg">
         <div className="flex items-center gap-2">
           <div className="relative">
             <select
-              value={selectedState ?? ''}
-              onChange={e => onSelectState(e.target.value || null)}
+              value={selectedRegion ?? ''}
+              onChange={e => onSelectRegion(e.target.value || null)}
               className="appearance-none bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-md px-3 py-1.5 pr-7 focus:outline-none focus:border-slate-500 cursor-pointer"
             >
-              <option value="">Todos los estados</option>
-              {HUB_STATES.map(s => (
-                <option key={s} value={s}>{s}</option>
+              <option value="">Todas las regiones</option>
+              {REGIONS.map(r => (
+                <option key={r} value={r}>{r}</option>
               ))}
             </select>
             <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">▾</span>
           </div>
-          {selectedState && (
+          {selectedRegion && (
             <button
-              onClick={() => onSelectState(null)}
+              onClick={() => onSelectRegion(null)}
               className="text-slate-500 hover:text-slate-300 text-sm leading-none transition-colors"
               title="Limpiar filtro"
             >
@@ -418,13 +709,31 @@ export function MapView({
         selectedArcId={selectedArcId}
         selectedRailOperator={selectedRailOperator}
         selectedState={selectedState}
+        selectedRegion={selectedRegion}
         commodity={commodity}
         mode={mode}
+        productionBubbleMetric={productionBubbleMetric}
+        storageBubbleMetric={storageBubbleMetric}
         onClearHub={onClearHub}
         onClearArc={onClearArcSelection}
         onClearRailOperator={onClearRailOperator}
         onClearState={() => onSelectState(null)}
+        onClearRegion={() => onSelectRegion(null)}
       />
+
+      {/* ── Export button ── */}
+      <button
+        onClick={handleExport}
+        title="Exportar mapa como PNG"
+        className="absolute bottom-8 right-3 z-10 flex items-center gap-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-xs rounded-md px-2.5 py-1.5 shadow-lg transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Exportar mapa
+      </button>
 
       {/* ── Attribution ── */}
       <div className="absolute bottom-2 right-3 text-slate-600 text-[10px] pointer-events-none select-none">
