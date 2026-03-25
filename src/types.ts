@@ -65,6 +65,11 @@ export interface UIState {
   selectedRailOperator: string | null;
   hubTypeVisibility: Record<HubType, boolean>;
   railOperatorVisibility: Record<string, boolean>;
+  showMaritimeRoutes: boolean;
+  /** Active movement group for a selected port (Altura / Cabotaje). */
+  portMovGroup: import('./data/puertoMovimientos').PortMovGroup | null;
+  /** Active movement sub-metric for a selected port. */
+  portMovMetric: import('./data/puertoMovimientos').PortMovMetric | null;
 }
 
 // ─── Viz helpers ───────────────────────────────────────────────────────────────

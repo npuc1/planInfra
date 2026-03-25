@@ -7,6 +7,7 @@ import type {
   ProductionBubbleMetric,
   StorageBubbleMetric,
 } from '../types';
+import type { PortMovGroup, PortMovMetric } from '../data/puertoMovimientos';
 import { RAIL_OPERATORS } from '../data/railNetwork';
 
 type Action =
@@ -20,7 +21,10 @@ type Action =
   | { type: 'TOGGLE_ALL_RAIL_OPERATORS' }
   | { type: 'TOGGLE_RAIL_OPERATOR'; operator: string }
   | { type: 'SET_PRODUCTION_BUBBLE_METRIC'; metric: ProductionBubbleMetric }
-  | { type: 'SET_STORAGE_BUBBLE_METRIC'; metric: StorageBubbleMetric };
+  | { type: 'SET_STORAGE_BUBBLE_METRIC'; metric: StorageBubbleMetric }
+  | { type: 'TOGGLE_MARITIME_ROUTES' }
+  | { type: 'SET_PORT_MOV_GROUP'; group: PortMovGroup | null }
+  | { type: 'SET_PORT_MOV_METRIC'; metric: PortMovMetric | null };
 
 const INITIAL_STATE: UIState = {
   commodity:            'maize',
@@ -38,6 +42,9 @@ const INITIAL_STATE: UIState = {
     end_consumer: false,
   },
   railOperatorVisibility: Object.fromEntries(RAIL_OPERATORS.map(op => [op, false])),
+  showMaritimeRoutes: false,
+  portMovGroup:  null,
+  portMovMetric: null,
 };
 
 function reducer(state: UIState, action: Action): UIState {
@@ -79,6 +86,12 @@ function reducer(state: UIState, action: Action): UIState {
       return { ...state, productionBubbleMetric: action.metric };
     case 'SET_STORAGE_BUBBLE_METRIC':
       return { ...state, storageBubbleMetric: action.metric };
+    case 'TOGGLE_MARITIME_ROUTES':
+      return { ...state, showMaritimeRoutes: !state.showMaritimeRoutes };
+    case 'SET_PORT_MOV_GROUP':
+      return { ...state, portMovGroup: action.group, portMovMetric: null };
+    case 'SET_PORT_MOV_METRIC':
+      return { ...state, portMovMetric: action.metric };
     default: return state;
   }
 }
@@ -100,6 +113,9 @@ export function useUIState() {
       dispatch({ type: 'SET_PRODUCTION_BUBBLE_METRIC', metric }),
     setStorageBubbleMetric: (metric: StorageBubbleMetric) =>
       dispatch({ type: 'SET_STORAGE_BUBBLE_METRIC', metric }),
+    toggleMaritimeRoutes: () => dispatch({ type: 'TOGGLE_MARITIME_ROUTES' }),
+    setPortMovGroup:  (group: PortMovGroup | null) => dispatch({ type: 'SET_PORT_MOV_GROUP',  group }),
+    setPortMovMetric: (metric: PortMovMetric | null) => dispatch({ type: 'SET_PORT_MOV_METRIC', metric }),
   };
 }
 

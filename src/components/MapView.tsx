@@ -8,6 +8,7 @@ import type { Map as MaplibreMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import {
+  COMMODITY_COLORS,
   COMMODITY_LABELS,
   HUB_TYPE_COLORS,
   HUB_TYPE_LABELS,
@@ -20,6 +21,12 @@ import {
   type StorageBubbleMetric,
   type ViewMode,
 } from '../types';
+import {
+  PUERTO_MOVIMIENTOS,
+  PORT_MOV_GROUP_LABELS,
+  type PortMovGroup,
+  type PortMovMetric,
+} from '../data/puertoMovimientos';
 import { HUB_BY_ID } from '../data/hubs';
 import { REGIONS, REGION_STATES, REGION_VIEW } from '../data/regions';
 import {
@@ -28,8 +35,9 @@ import {
   CONSUMER_VOLUMES,
   CONSUMER_PROVIDER,
 } from '../data/importFlows';
-import { STATE_BALANCE } from '../data/stateBalance';
+import { STATE_BALANCE, computeKPIs, getStateBalance } from '../data/stateBalance';
 import { RAIL_OPERATOR_COLORS, RAIL_OPERATOR_NAMES } from '../data/railNetwork';
+import { MARITIME_ROUTES } from '../data/maritimeRoutes';
 
 // ─── Basemap definitions ───────────────────────────────────────────────────────
 
@@ -129,6 +137,21 @@ function applySpanishBasemapLabels(map: MaplibreMap) {
       } catch {
         /* layer not ready */
       }
+    }
+  }
+}
+
+/** Set all symbol layer text to black (for light/topographic basemaps). */
+function applyBlackBasemapText(map: MaplibreMap) {
+  const style = map.getStyle();
+  if (!style?.layers) return;
+  const black = 'rgba(0, 0, 0, 1)';
+  for (const layer of style.layers) {
+    if (layer.type !== 'symbol') continue;
+    try {
+      map.setPaintProperty(layer.id, 'text-color', black as never);
+    } catch {
+      /* layer not ready */
     }
   }
 }
@@ -281,19 +304,24 @@ interface InfoTileProps {
   mode: ViewMode | null;
   productionBubbleMetric: ProductionBubbleMetric;
   storageBubbleMetric: StorageBubbleMetric;
+  portMovGroup: PortMovGroup | null;
+  portMovMetric: PortMovMetric | null;
   onClearHub: () => void;
   onClearArc: () => void;
   onClearRailOperator: () => void;
   onClearState: () => void;
   onClearRegion: () => void;
+  onClearPortMov: () => void;
 }
 
 function InfoTile({
   selectedHubId, selectedArcId, selectedRailOperator, selectedState, selectedRegion,
   commodity, mode, productionBubbleMetric, storageBubbleMetric,
-  onClearHub, onClearArc, onClearRailOperator, onClearState, onClearRegion,
+  portMovGroup, portMovMetric,
+  onClearHub, onClearArc, onClearRailOperator, onClearState, onClearRegion, onClearPortMov,
 }: InfoTileProps) {
-  const hasAny = selectedArcId || selectedRailOperator || selectedHubId || selectedState || selectedRegion;
+  const hasSpecific = !!(selectedArcId || selectedRailOperator || selectedHubId || selectedState || selectedRegion);
+  const hasAny = hasSpecific || !!portMovGroup || !!mode;
   if (!hasAny) return null;
 
   // ── US origin ────────────────────────────────────────────────────────────
@@ -378,11 +406,210 @@ function InfoTile({
     );
   }
 
+  // ── Aggregated port movement (no specific port selected) ─────────────────
+  if (portMovGroup && !hasSpecific) {
+    const allMov = Object.values(PUERTO_MOVIMIENTOS);
+    const totExport  = allMov.reduce((s, d) => s + d.altura.exportacion, 0);
+    const totImport  = allMov.reduce((s, d) => s + d.altura.importacion, 0);
+    const totSalida  = allMov.reduce((s, d) => s + d.cabotaje.salida,    0);
+    const totEntrada = allMov.reduce((s, d) => s + d.cabotaje.entrada,   0);
+    const fmtNet = (n: number) => n >= 0 ? `+${fmtTons(n)}` : `−${fmtTons(Math.abs(n))}`;
+
+    // ── Proporción aggregated tile ──────────────────────────────────────────
+    if (portMovGroup === 'proporcion') {
+      const totalIngresado = totImport + totEntrada;
+      const impPct  = totalIngresado > 0 ? ((totImport  / totalIngresado) * 100).toFixed(1) : '0.0';
+      const entPct  = totalIngresado > 0 ? ((totEntrada / totalIngresado) * 100).toFixed(1) : '0.0';
+      // Proportional bar widths
+      const impW = totalIngresado > 0 ? (totImport  / totalIngresado) * 100 : 50;
+      const entW = 100 - impW;
+      return (
+        <TileShell accentColor="rgb(192,75,170)" onClose={onClearPortMov}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'rgb(192,75,170)' }}>
+            Proporción de ingresos
+          </p>
+          <p className="text-sm font-bold text-white leading-tight">Todos los puertos</p>
+          <p className="text-xs text-slate-400 mt-0.5">Agregado nacional · T.M./año</p>
+
+          {/* Proportional bar */}
+          <div className="mt-2.5 flex rounded-full overflow-hidden h-2">
+            <div style={{ width: `${impW}%`, backgroundColor: 'rgb(244,63,94)' }} />
+            <div style={{ width: `${entW}%`, backgroundColor: 'rgb(139,92,246)' }} />
+          </div>
+
+          <div className="mt-2 grid grid-cols-2 gap-1.5">
+            <div className="rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.25)' }}>
+              <p className="text-[10px] text-slate-500 leading-none mb-0.5">Importación altura</p>
+              <p className="text-xs font-bold" style={{ color: 'rgb(244,63,94)' }}>{impPct}%</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{fmtTons(totImport)}</p>
+            </div>
+            <div className="rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)' }}>
+              <p className="text-[10px] text-slate-500 leading-none mb-0.5">Entrada cabotaje</p>
+              <p className="text-xs font-bold" style={{ color: 'rgb(139,92,246)' }}>{entPct}%</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{fmtTons(totEntrada)}</p>
+            </div>
+          </div>
+          <div className="mt-1.5 rounded-md px-2.5 py-2 bg-slate-800/60">
+            <p className="text-[10px] text-slate-500 leading-none mb-0.5">Total ingresado</p>
+            <p className="text-xs font-bold text-white">{fmtTons(totalIngresado)}</p>
+          </div>
+        </TileShell>
+      );
+    }
+
+    // ── Altura / Cabotaje aggregated tile ───────────────────────────────────
+    const netAltura   = totExport - totImport;
+    const netCabotaje = totSalida - totEntrada;
+    const accentCol = portMovGroup === 'altura' ? 'rgb(32,178,170)' : 'rgb(251,146,60)';
+    const netAlturaColor   = netAltura   >= 0 ? 'rgb(32,178,170)' : 'rgb(244,63,94)';
+    const netCabotajeColor = netCabotaje >= 0 ? 'rgb(251,146,60)' : 'rgb(139,92,246)';
+
+    return (
+      <TileShell accentColor={accentCol} onClose={onClearPortMov}>
+        <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: accentCol }}>
+          Movimiento granelero · {PORT_MOV_GROUP_LABELS[portMovGroup]}
+        </p>
+        <p className="text-sm font-bold text-white leading-tight">Todos los puertos</p>
+        <p className="text-xs text-slate-400 mt-0.5">Agregado nacional · T.M./año</p>
+
+        <div className="mt-2.5 rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(32,178,170,0.08)', border: '1px solid rgba(32,178,170,0.25)' }}>
+          <p className="text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'rgb(32,178,170)', opacity: 0.8 }}>Altura</p>
+          <div className="grid grid-cols-2 gap-1.5 mb-1.5">
+            <div>
+              <p className="text-[10px] text-slate-500 leading-none mb-0.5">Exportación</p>
+              <p className="text-xs font-bold text-slate-200">{fmtTons(totExport)}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-slate-500 leading-none mb-0.5">Importación</p>
+              <p className="text-xs font-bold text-slate-200">{fmtTons(totImport)}</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 leading-none mb-0.5">Balance neto</p>
+            <p className="text-xs font-bold" style={{ color: netAlturaColor }}>{fmtNet(netAltura)}</p>
+          </div>
+        </div>
+
+        <div className="mt-1.5 rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.25)' }}>
+          <p className="text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'rgb(251,146,60)', opacity: 0.8 }}>Cabotaje</p>
+          <div className="grid grid-cols-2 gap-1.5 mb-1.5">
+            <div>
+              <p className="text-[10px] text-slate-500 leading-none mb-0.5">Salida</p>
+              <p className="text-xs font-bold text-slate-200">{fmtTons(totSalida)}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-slate-500 leading-none mb-0.5">Entrada</p>
+              <p className="text-xs font-bold text-slate-200">{fmtTons(totEntrada)}</p>
+            </div>
+          </div>
+          <div>
+            <p className="text-[10px] text-slate-500 leading-none mb-0.5">Balance neto</p>
+            <p className="text-xs font-bold" style={{ color: netCabotajeColor }}>{fmtNet(netCabotaje)}</p>
+          </div>
+        </div>
+      </TileShell>
+    );
+  }
+
+  // ── National overview (Production / Storage vista, nothing selected) ────
+  if (mode && !hasSpecific && !portMovGroup) {
+    const kpi = computeKPIs(commodity);
+    const rows = getStateBalance(commodity);
+    const surplusStates  = rows.filter(r => r.surplusDeficitTons > 0).length;
+    const deficitStates  = rows.filter(r => r.surplusDeficitTons < 0).length;
+    const totalStorage   = rows.reduce((s, r) => s + r.storageCapacityTons, 0);
+    const balance        = kpi.totalProduction - kpi.totalDemand;
+    const balanceColor   = balance >= 0 ? 'rgb(74,222,128)' : 'rgb(248,113,113)';
+    const balanceLabel   = balance >= 0
+      ? `+${fmtTons(balance)} superávit`
+      : `−${fmtTons(Math.abs(balance))} déficit`;
+
+    const onClearMode = () => {
+      // Deselect the vista by toggling mode off
+      // Since we don't have a direct setter here, we close via a dummy handler
+      // that the parent already provides through onClearState (closest available)
+      onClearState();
+    };
+
+    if (mode === 'production') {
+      const [r, g, b] = COMMODITY_COLORS[commodity];
+      const accent = `rgb(${r},${g},${b})`;
+      return (
+        <TileShell accentColor={accent} onClose={onClearMode}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: accent }}>
+            {COMMODITY_LABELS[commodity]} · {MODE_LABELS[mode]}
+          </p>
+          <p className="text-sm font-bold text-white leading-tight">Panorama nacional</p>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Agregado {rows.length} estados · T.M./año
+          </p>
+          <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+            <InfoStat label="Producción total" value={fmtTons(kpi.totalProduction)} />
+            <InfoStat label="Consumo estimado" value={fmtTons(kpi.totalDemand)} />
+            <div className="bg-slate-800/60 rounded-md px-2.5 py-2">
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider leading-none mb-1">Balance nacional</p>
+              <p className="text-sm font-bold leading-tight" style={{ color: balanceColor }}>{balanceLabel}</p>
+            </div>
+            <InfoStat label="Importación est." value={fmtTons(kpi.totalImports)} />
+          </div>
+          <div className="mt-1.5 flex gap-1.5">
+            <div className="flex-1 rounded-md px-2.5 py-1.5 bg-slate-800/60">
+              <p className="text-[10px] text-slate-400 leading-none mb-0.5">Superávit</p>
+              <p className="text-xs font-bold" style={{ color: 'rgb(74,222,128)' }}>{surplusStates} estados</p>
+            </div>
+            <div className="flex-1 rounded-md px-2.5 py-1.5 bg-slate-800/60">
+              <p className="text-[10px] text-slate-400 leading-none mb-0.5">Déficit</p>
+              <p className="text-xs font-bold" style={{ color: 'rgb(248,113,113)' }}>{deficitStates} estados</p>
+            </div>
+          </div>
+        </TileShell>
+      );
+    }
+
+    if (mode === 'storage') {
+      const storageMinusProd = totalStorage - kpi.totalProduction;
+      const smpColor = storageMinusProd >= 0 ? 'rgb(74,222,128)' : 'rgb(248,113,113)';
+      const smpLabel = storageMinusProd >= 0
+        ? `+${fmtTons(storageMinusProd)}`
+        : `−${fmtTons(Math.abs(storageMinusProd))}`;
+      const utilizationPct = kpi.totalProduction > 0
+        ? ((kpi.totalProduction / totalStorage) * 100).toFixed(1)
+        : '0.0';
+      const accent = 'rgb(168,85,247)'; // purple-500
+      return (
+        <TileShell accentColor={accent} onClose={onClearMode}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: accent }}>
+            {COMMODITY_LABELS[commodity]} · {MODE_LABELS[mode]}
+          </p>
+          <p className="text-sm font-bold text-white leading-tight">Panorama nacional</p>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Agregado {rows.length} estados · T.M.
+          </p>
+          <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+            <InfoStat label="Capacidad total" value={fmtTons(totalStorage)} />
+            <InfoStat label="Producción total" value={fmtTons(kpi.totalProduction)} />
+            <div className="bg-slate-800/60 rounded-md px-2.5 py-2">
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider leading-none mb-1">Almacén − producción</p>
+              <p className="text-sm font-bold leading-tight" style={{ color: smpColor }}>{smpLabel}</p>
+            </div>
+            <div className="bg-slate-800/60 rounded-md px-2.5 py-2">
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider leading-none mb-1">Utilización est.</p>
+              <p className="text-sm font-bold text-white leading-tight">{utilizationPct}%</p>
+            </div>
+          </div>
+        </TileShell>
+      );
+    }
+  }
+
   // ── Hub ──────────────────────────────────────────────────────────────────
   if (selectedHubId) {
     const hub = HUB_BY_ID[selectedHubId] as Hub | undefined;
     if (!hub) return null;
     const [r, g, b] = HUB_TYPE_COLORS[hub.type];
+    const isPort = hub.type === 'port';
+    const movData = isPort ? PUERTO_MOVIMIENTOS[selectedHubId] : undefined;
+
     return (
       <TileShell accentColor={`rgb(${r},${g},${b})`} onClose={onClearHub}>
         <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: `rgb(${r},${g},${b})` }}>
@@ -390,12 +617,96 @@ function InfoTile({
         </p>
         <p className="text-sm font-bold text-white leading-tight">{hub.name}</p>
         <p className="text-xs text-slate-400 mt-0.5">{hub.state}</p>
-        {hub.notes && (
+        {!isPort && hub.notes && (
           <p className="text-xs text-slate-500 italic mt-1.5 leading-snug">{hub.notes}</p>
         )}
-        {hub.capacityTons !== undefined && (
+        {!isPort && hub.capacityTons !== undefined && (
           <div className="mt-2.5">
             <InfoStat label="Capacidad de manejo" value={fmtTons(hub.capacityTons)} sub="por año" />
+          </div>
+        )}
+
+        {/* ── Port movement stats ────────────────────────────────────────── */}
+        {isPort && movData && (
+          <div className="mt-3 border-t border-slate-700/60 pt-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-2">
+              Movimiento granelero
+            </p>
+
+            {portMovGroup === 'proporcion' ? (() => {
+              const totalIngresado = movData.altura.importacion + movData.cabotaje.entrada;
+              if (totalIngresado === 0) return (
+                <p className="text-xs text-slate-500">Sin datos de ingresos.</p>
+              );
+              const impPct = ((movData.altura.importacion / totalIngresado) * 100).toFixed(1);
+              const entPct = ((movData.cabotaje.entrada   / totalIngresado) * 100).toFixed(1);
+              const impW   = (movData.altura.importacion / totalIngresado) * 100;
+              const entW   = 100 - impW;
+              return (
+                <div>
+                  {/* Proportional bar */}
+                  <div className="flex rounded-full overflow-hidden h-2 mb-2">
+                    <div style={{ width: `${impW}%`, backgroundColor: 'rgb(244,63,94)' }} />
+                    <div style={{ width: `${entW}%`, backgroundColor: 'rgb(139,92,246)' }} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div className="rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(244,63,94,0.08)', border: '1px solid rgba(244,63,94,0.25)' }}>
+                      <p className="text-[10px] text-slate-500 leading-none mb-0.5">Importación altura</p>
+                      <p className="text-xs font-bold" style={{ color: 'rgb(244,63,94)' }}>{impPct}%</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{movData.altura.importacion > 0 ? fmtTons(movData.altura.importacion) : '—'}</p>
+                    </div>
+                    <div className="rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.25)' }}>
+                      <p className="text-[10px] text-slate-500 leading-none mb-0.5">Entrada cabotaje</p>
+                      <p className="text-xs font-bold" style={{ color: 'rgb(139,92,246)' }}>{entPct}%</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{movData.cabotaje.entrada > 0 ? fmtTons(movData.cabotaje.entrada) : '—'}</p>
+                    </div>
+                  </div>
+                  <div className="mt-1.5 rounded-md px-2.5 py-2 bg-slate-800/60">
+                    <p className="text-[10px] text-slate-500 leading-none mb-0.5">Total ingresado</p>
+                    <p className="text-xs font-bold text-white">{fmtTons(totalIngresado)}</p>
+                  </div>
+                </div>
+              );
+            })() : (
+              <div className="space-y-1.5">
+                {/* Altura */}
+                <div className="rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(32,178,170,0.08)', border: '1px solid rgba(32,178,170,0.25)' }}>
+                  <p className="text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'rgb(32,178,170)', opacity: 0.8 }}>Altura</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div>
+                      <p className="text-[10px] text-slate-500 leading-none mb-0.5">Exportación</p>
+                      <p className="text-xs font-bold" style={{ color: 'rgb(32,178,170)' }}>
+                        {movData.altura.exportacion > 0 ? fmtTons(movData.altura.exportacion) : '—'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-500 leading-none mb-0.5">Importación</p>
+                      <p className="text-xs font-bold" style={{ color: 'rgb(244,63,94)' }}>
+                        {movData.altura.importacion > 0 ? fmtTons(movData.altura.importacion) : '—'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {/* Cabotaje */}
+                <div className="rounded-md px-2.5 py-2" style={{ backgroundColor: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.25)' }}>
+                  <p className="text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'rgb(251,146,60)', opacity: 0.8 }}>Cabotaje</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div>
+                      <p className="text-[10px] text-slate-500 leading-none mb-0.5">Salida</p>
+                      <p className="text-xs font-bold" style={{ color: 'rgb(251,146,60)' }}>
+                        {movData.cabotaje.salida > 0 ? fmtTons(movData.cabotaje.salida) : '—'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-500 leading-none mb-0.5">Entrada</p>
+                      <p className="text-xs font-bold" style={{ color: 'rgb(139,92,246)' }}>
+                        {movData.cabotaje.entrada > 0 ? fmtTons(movData.cabotaje.entrada) : '—'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </TileShell>
@@ -487,6 +798,57 @@ function InfoTile({
   return null;
 }
 
+// ─── MaritimeTile ─────────────────────────────────────────────────────────────
+
+const MARITIME_ACCENT: Record<string, string> = {
+  pacific:  'rgb(32,178,170)',
+  panama:   'rgb(30,144,255)',
+  magellan: 'rgb(135,206,235)',
+};
+const MARITIME_TYPE_LABEL: Record<string, string> = {
+  pacific:  'Ruta marítima · Pacífico',
+  panama:   'Ruta marítima · Canal de Panamá',
+  magellan: 'Alternativa · Estrecho de Magallanes',
+};
+
+function MaritimeTile({
+  routeId,
+  onClose,
+}: {
+  routeId: string;
+  onClose: () => void;
+}) {
+  const route = MARITIME_ROUTES.find(r => r.id === routeId);
+  if (!route) return null;
+  const accent = MARITIME_ACCENT[route.type] ?? 'rgb(100,160,255)';
+  return (
+    <TileShell accentColor={accent} onClose={onClose}>
+      <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: accent }}>
+        {MARITIME_TYPE_LABEL[route.type]}
+      </p>
+      <p className="text-sm font-bold text-white leading-tight">{route.name}</p>
+      {route.durationNote && (
+        <p className="text-xs text-slate-400 mt-0.5">{route.durationNote}</p>
+      )}
+      <div className="mt-2.5 grid grid-cols-1 gap-1.5">
+        {route.durationRange ? (
+          <InfoStat label="Tiempo estimado de tránsito" value={`${route.durationRange} días`} />
+        ) : (
+          <div className="bg-slate-800/60 rounded-md px-2.5 py-2">
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider leading-none mb-1">
+              Tiempo adicional
+            </p>
+            <p className="text-sm font-bold text-white leading-tight">+45 días</p>
+            <p className="text-[10px] text-slate-500 mt-0.5">sobre la ruta por Canal de Panamá</p>
+          </div>
+        )}
+      </div>
+    </TileShell>
+  );
+}
+
+// ─── TileShell ────────────────────────────────────────────────────────────────
+
 function TileShell({
   accentColor,
   onClose,
@@ -539,10 +901,15 @@ interface MapViewProps {
   selectedArcId: string | null;
   selectedRailOperator: string | null;
   onClearRailOperator: () => void;
+  selectedMaritimeRouteId: string | null;
+  onClearMaritimeRoute: () => void;
   commodity: Commodity;
   mode: ViewMode | null;
   productionBubbleMetric: ProductionBubbleMetric;
   storageBubbleMetric: StorageBubbleMetric;
+  portMovGroup: PortMovGroup | null;
+  portMovMetric: PortMovMetric | null;
+  onClearPortMov: () => void;
   basemap: BasemapId;
 }
 
@@ -559,20 +926,33 @@ export function MapView({
   selectedArcId,
   selectedRailOperator,
   onClearRailOperator,
+  selectedMaritimeRouteId,
+  onClearMaritimeRoute,
   commodity,
   mode,
   productionBubbleMetric,
   storageBubbleMetric,
+  portMovGroup,
+  portMovMetric,
+  onClearPortMov,
   basemap,
 }: MapViewProps) {
   const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE);
   const mapRef       = useRef<MaplibreMap | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const basemapRef   = useRef(basemap);
+  basemapRef.current = basemap;
 
   const handleMapLoad = useCallback((e: { target: MaplibreMap }) => {
     mapRef.current = e.target;
-    applySpanishBasemapLabels(e.target);
-    e.target.on('style.load', () => applySpanishBasemapLabels(e.target));
+    const onStyleLoad = () => {
+      applySpanishBasemapLabels(e.target);
+      if (basemapRef.current === 'light' || basemapRef.current === 'gray') {
+        applyBlackBasemapText(e.target);
+      }
+    };
+    onStyleLoad();
+    e.target.on('style.load', onStyleLoad);
   }, []);
 
   // Export: flag triggers a deck.gl re-render; we capture inside onAfterRender
@@ -612,8 +992,10 @@ export function MapView({
       const a   = document.createElement('a');
       a.href     = url;
       a.download = `mapa_granos_${new Date().toISOString().slice(0, 10)}.png`;
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
     }, 'image/png');
   }, []);
 
@@ -645,6 +1027,10 @@ export function MapView({
         // Hub clicked — clear any locked arc
         onClearArcSelection();
         onHubClick(obj.id as string);
+      } else if (obj && 'hub' in obj && obj.hub && typeof (obj.hub as { id?: string }).id === 'string') {
+        // Port movement bubble circle clicked — same as clicking the port
+        onClearArcSelection();
+        onHubClick((obj.hub as { id: string }).id);
       } else if (!obj) {
         // Empty space — clear arc selection only; other tiles stay until explicitly closed
         onClearArcSelection();
@@ -663,6 +1049,7 @@ export function MapView({
         layers={layers}
         onClick={handleClick}
         getTooltip={getTooltip}
+        pickingRadius={8}
         style={{ position: 'absolute', inset: '0' }}
         onAfterRender={handleAfterRender}
       >
@@ -703,23 +1090,30 @@ export function MapView({
         </div>
       </div>
 
-      {/* ── Info tile ── */}
-      <InfoTile
-        selectedHubId={selectedHubId}
-        selectedArcId={selectedArcId}
-        selectedRailOperator={selectedRailOperator}
-        selectedState={selectedState}
-        selectedRegion={selectedRegion}
-        commodity={commodity}
-        mode={mode}
-        productionBubbleMetric={productionBubbleMetric}
-        storageBubbleMetric={storageBubbleMetric}
-        onClearHub={onClearHub}
-        onClearArc={onClearArcSelection}
-        onClearRailOperator={onClearRailOperator}
-        onClearState={() => onSelectState(null)}
-        onClearRegion={() => onSelectRegion(null)}
-      />
+      {/* ── Info tile (maritime takes priority; both may coexist at different positions) ── */}
+      {selectedMaritimeRouteId ? (
+        <MaritimeTile routeId={selectedMaritimeRouteId} onClose={onClearMaritimeRoute} />
+      ) : (
+        <InfoTile
+          selectedHubId={selectedHubId}
+          selectedArcId={selectedArcId}
+          selectedRailOperator={selectedRailOperator}
+          selectedState={selectedState}
+          selectedRegion={selectedRegion}
+          commodity={commodity}
+          mode={mode}
+          productionBubbleMetric={productionBubbleMetric}
+          storageBubbleMetric={storageBubbleMetric}
+          portMovGroup={portMovGroup}
+          portMovMetric={portMovMetric}
+          onClearHub={onClearHub}
+          onClearArc={onClearArcSelection}
+          onClearRailOperator={onClearRailOperator}
+          onClearState={() => onSelectState(null)}
+          onClearRegion={() => onSelectRegion(null)}
+          onClearPortMov={onClearPortMov}
+        />
+      )}
 
       {/* ── Export button ── */}
       <button

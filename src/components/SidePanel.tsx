@@ -17,8 +17,14 @@ import {
   PRODUCTION_BUBBLE_LABELS,
   STORAGE_BUBBLE_LABELS,
 } from '../types';
-import { HUB_BY_ID } from '../data/hubs';
 import { RAIL_OPERATORS, RAIL_OPERATOR_COLORS, RAIL_OPERATOR_NAMES } from '../data/railNetwork';
+import {
+  PORT_MOV_GROUP_LABELS,
+  PORT_MOV_METRIC_LABELS,
+  GROUP_METRICS,
+  type PortMovGroup,
+  type PortMovMetric,
+} from '../data/puertoMovimientos';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -26,12 +32,6 @@ const COMMODITIES: Commodity[] = ['maize', 'beans', 'wheat', 'rice'];
 const MODES: ViewMode[]        = ['production', 'storage'];
 const PRODUCTION_METRICS: ProductionBubbleMetric[] = ['total', 'consumption', 'balance'];
 const STORAGE_METRICS: StorageBubbleMetric[] = ['total', 'balance'];
-
-function fmt(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} M`;
-  if (n >= 1_000)     return `${(n / 1_000).toFixed(0)} K`;
-  return String(n);
-}
 
 // ─── PillGroup ────────────────────────────────────────────────────────────────
 
@@ -147,64 +147,6 @@ function HubTypeToggleRow({
   );
 }
 
-// ─── KpiCard ──────────────────────────────────────────────────────────────────
-
-function KpiCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div className="bg-slate-800/60 rounded-lg px-3 py-2.5">
-      <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">{label}</p>
-      <p className="text-lg font-bold text-white leading-tight">{value}</p>
-      {sub && <p className="text-xs text-slate-400">{sub}</p>}
-    </div>
-  );
-}
-
-// ─── HubDetail ────────────────────────────────────────────────────────────────
-
-function HubDetail({ hubId, onClose }: { hubId: string; onClose: () => void }) {
-  const hub = HUB_BY_ID[hubId];
-  if (!hub) return null;
-
-  const [r, g, b] = HUB_TYPE_COLORS[hub.type];
-  const typeColor  = `rgb(${r},${g},${b})`;
-
-  return (
-    <div className="mt-4 bg-slate-800/70 rounded-xl p-4 border border-slate-700">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: typeColor }}>
-            {HUB_TYPE_LABELS[hub.type]}
-          </p>
-          <p className="text-base font-bold text-white mt-0.5">{hub.name}</p>
-          <p className="text-xs text-slate-400">{hub.state}</p>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-slate-500 hover:text-slate-300 text-lg leading-none mt-0.5"
-        >
-          ×
-        </button>
-      </div>
-
-      {hub.notes && (
-        <p className="text-xs text-slate-400 italic mb-3 border-t border-slate-700 pt-2">
-          {hub.notes}
-        </p>
-      )}
-
-      {hub.capacityTons !== undefined && (
-        <div className="grid grid-cols-1 gap-2">
-          <KpiCard
-            label="Capacidad de manejo"
-            value={fmt(hub.capacityTons)}
-            sub="toneladas métricas / año"
-          />
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ─── SidePanel ────────────────────────────────────────────────────────────────
 
 const BASEMAP_OPTIONS: { id: BasemapId; label: string }[] = [
@@ -278,29 +220,98 @@ export function SidePanel({ state, actions, basemap, onSetBasemap }: SidePanelPr
 
       </div>
 
-      {/* ── Hub detail / Legend ───────────────────────────────────────────── */}
+      {/* ── Legend ────────────────────────────────────────────────────────── */}
       <div className="px-5 py-4 flex-1 overflow-y-auto min-h-0">
-        {state.selectedHubId ? (
-          <HubDetail
-            hubId={state.selectedHubId}
-            onClose={() => actions.selectHub(null)}
-          />
-        ) : (
-          <div>
+        <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">
               COMPONENTES
             </p>
 
             {/* Hub type legend (clickable toggles) */}
             <div className="space-y-1 mb-3">
-              {(['port', 'terminal'] as const).map(type => (
-                <HubTypeToggleRow
-                  key={type}
-                  hubType={type}
-                  visible={state.hubTypeVisibility[type]}
-                  onToggle={() => actions.toggleHubType(type)}
-                />
-              ))}
+              {/* Port row + movement controls */}
+              <HubTypeToggleRow
+                hubType="port"
+                visible={state.hubTypeVisibility.port}
+                onToggle={() => actions.toggleHubType('port')}
+              />
+              {state.hubTypeVisibility.port && (
+                <div className="ml-5 mt-1 space-y-1.5">
+                  <div className="flex gap-1.5">
+                    {(['altura', 'cabotaje'] as PortMovGroup[]).map(g => {
+                      const active = state.portMovGroup === g;
+                      const col = g === 'altura' ? 'rgb(32,178,170)' : 'rgb(251,146,60)';
+                      return (
+                        <button
+                          key={g}
+                          type="button"
+                          onClick={() => actions.setPortMovGroup(active ? null : g)}
+                          style={active
+                            ? { backgroundColor: col, color: '#000', borderColor: col }
+                            : { borderColor: col, color: col }}
+                          className={`flex-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border transition-all ${
+                            active ? '' : 'bg-transparent hover:opacity-80'
+                          }`}
+                        >
+                          {PORT_MOV_GROUP_LABELS[g]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {/* Sub-metric pills (only for altura/cabotaje) */}
+                  {state.portMovGroup && GROUP_METRICS[state.portMovGroup].length > 0 && (
+                    <div className="flex gap-1.5">
+                      {GROUP_METRICS[state.portMovGroup].map(metric => {
+                        const active = state.portMovMetric === metric;
+                        const col = state.portMovGroup === 'altura'
+                          ? (metric === 'exportacion' ? 'rgb(32,178,170)' : 'rgb(244,63,94)')
+                          : (metric === 'salida'      ? 'rgb(251,146,60)' : 'rgb(139,92,246)');
+                        return (
+                          <button
+                            key={metric}
+                            type="button"
+                            onClick={() => actions.setPortMovMetric(active ? null : metric)}
+                            style={active
+                              ? { backgroundColor: col, color: '#000', borderColor: col }
+                              : { borderColor: col, color: col }}
+                            className={`flex-1 px-2 py-0.5 text-[11px] font-semibold rounded-full border transition-all ${
+                              active ? '' : 'bg-transparent hover:opacity-80'
+                            }`}
+                          >
+                            {PORT_MOV_METRIC_LABELS[metric]}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Proporción button — full width, double height */}
+                  {(() => {
+                    const active = state.portMovGroup === 'proporcion';
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => actions.setPortMovGroup(active ? null : 'proporcion')}
+                        style={active
+                          ? { background: 'linear-gradient(135deg, rgb(244,63,94), rgb(139,92,246))', color: '#fff', borderColor: 'transparent' }
+                          : { borderColor: 'rgb(192,75,170)', color: 'rgb(192,75,170)' }}
+                        className={`w-full px-2 py-1.5 text-[11px] font-semibold rounded-full border transition-all ${
+                          active ? '' : 'bg-transparent hover:opacity-80'
+                        }`}
+                      >
+                        Proporción
+                      </button>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {/* Terminal row */}
+              <HubTypeToggleRow
+                hubType="terminal"
+                visible={state.hubTypeVisibility.terminal}
+                onToggle={() => actions.toggleHubType('terminal')}
+              />
             </div>
 
             <div className="space-y-1 mb-4 border-t border-slate-700 pt-3">
@@ -312,6 +323,36 @@ export function SidePanel({ state, actions, basemap, onSetBasemap }: SidePanelPr
                   onToggle={() => actions.toggleHubType(type)}
                 />
               ))}
+              <button
+                type="button"
+                onClick={actions.toggleMaritimeRoutes}
+                className={`flex items-center gap-2 w-full rounded-md px-2 py-1.5 transition-all text-left group ${
+                  state.showMaritimeRoutes
+                    ? 'bg-slate-800/60 hover:bg-slate-700/70 text-slate-50'
+                    : 'opacity-40 hover:opacity-60'
+                }`}
+              >
+                {/* Icon: solid + dashed line stacked */}
+                <span className="flex flex-col gap-0.5 flex-shrink-0 w-3 items-center">
+                  <span
+                    className="block rounded-full"
+                    style={{ width: 12, height: 2, backgroundColor: state.showMaritimeRoutes ? 'rgb(30,144,255)' : 'rgb(100,116,139)' }}
+                  />
+                  <span
+                    className="block"
+                    style={{
+                      width: 12,
+                      height: 2,
+                      backgroundImage: state.showMaritimeRoutes
+                        ? 'repeating-linear-gradient(to right, rgb(135,206,235) 0px, rgb(135,206,235) 4px, transparent 4px, transparent 7px)'
+                        : 'repeating-linear-gradient(to right, rgb(100,116,139) 0px, rgb(100,116,139) 4px, transparent 4px, transparent 7px)',
+                    }}
+                  />
+                </span>
+                <span className={`text-xs ${state.showMaritimeRoutes ? 'font-semibold text-slate-100' : 'text-slate-400 line-through'}`}>
+                  Rutas marítimas
+                </span>
+              </button>
             </div>
 
             {/* Rail network legend */}
@@ -382,7 +423,6 @@ export function SidePanel({ state, actions, basemap, onSetBasemap }: SidePanelPr
               Consumo estimado donde no hay datos estatales disponibles.
             </p>
           </div>
-        )}
       </div>
 
       {/* ── Basemap switcher ──────────────────────────────────────────────── */}

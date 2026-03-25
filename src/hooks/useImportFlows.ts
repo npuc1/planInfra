@@ -12,7 +12,10 @@ import {
   CONSUMER_PROVIDER,
   CONSUMER_VOLUMES,
 } from '../data/importFlows';
+import type { BasemapId } from '../components/MapView';
 import { HUB_TYPE_COLORS, type UIState, type RGBA } from '../types';
+
+const LIGHT_BASEMAPS: BasemapId[] = ['light', 'gray'];
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -100,6 +103,7 @@ export function useImportFlows(
   selectedArcId: string | null,
   onArcHover:    (id: string | null) => void,
   onArcClick:    (id: string) => void,
+  basemap:       BasemapId,
 ): Layer[] {
 
   // ── Datasets (recomputed only when visibility changes) ────────────────────
@@ -298,6 +302,9 @@ export function useImportFlows(
     );
 
     // Text label beneath the origin node (non-interactive)
+    const labelColor: RGBA = LIGHT_BASEMAPS.includes(basemap)
+      ? [0, 0, 0, originSelected ? 230 : 140]
+      : [255, 200, 60, originSelected ? 230 : 140];
     layers.push(
       new TextLayer({
         id: 'us-origin-label',
@@ -305,17 +312,17 @@ export function useImportFlows(
         getPosition: () => [...US_ORIGIN, 0],
         getText: (d: { text: string }) => d.text,
         getSize: 11,
-        getColor: [255, 200, 60, originSelected ? 230 : 140] as RGBA,
+        getColor: labelColor,
         getTextAnchor: 'middle',
         getAlignmentBaseline: 'top',
         getPixelOffset: [0, 14],
         fontFamily: 'Inter, system-ui, sans-serif',
         fontWeight: '600',
         pickable: false,
-        updateTriggers: { getColor: originSelected },
+        updateTriggers: { getColor: [originSelected, basemap] },
       }),
     );
 
     return layers;
-  }, [importArcs, branchArcs, animTime, hoveredArcId, selectedArcId, state.selectedState, state.selectedRegion, onArcHover, onArcClick]);
+  }, [importArcs, branchArcs, animTime, hoveredArcId, selectedArcId, state.selectedState, state.selectedRegion, onArcHover, onArcClick, basemap]);
 }

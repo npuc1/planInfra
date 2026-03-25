@@ -27,8 +27,8 @@ function balanceFillAndLine(
   dimmed: boolean,
 ): { fill: RGBA; line: RGBA } {
   const base = net >= 0 ? BALANCE_POS : BALANCE_NEG;
-  const fillAlpha = dimmed ? 6 : selected ? 42 : 28;
-  const lineAlpha = dimmed ? 20 : 200;
+  const fillAlpha = dimmed ? 18 : selected ? 42 : 28;
+  const lineAlpha = dimmed ? 60 : 200;
   return {
     fill: [base[0], base[1], base[2], fillAlpha] as RGBA,
     line: [base[0], base[1], base[2], lineAlpha] as RGBA,
@@ -100,7 +100,7 @@ export function useProductionBubbles(
           const net = r.surplusDeficitTons;
           return balanceFillAndLine(net, bright, dimmed).fill;
         }
-        return [cr, cg, cb, dimmed ? 6 : 42] as RGBA;
+        return [cr, cg, cb, dimmed ? 18 : 42] as RGBA;
       },
       stroked: true,
       getLineColor: r => {
@@ -117,12 +117,12 @@ export function useProductionBubbles(
           const net = r.surplusDeficitTons;
           return balanceFillAndLine(net, bright, dimmed).line;
         }
-        return [cr, cg, cb, dimmed ? 50 : 200] as RGBA;
+        return [cr, cg, cb, dimmed ? 60 : 200] as RGBA;
       },
       getLineWidth: r => {
         if (ss && r.state === ss) return 2.5;
         if (!hasFilter || regionStates?.includes(r.state)) return 1.5;
-        return 0;
+        return 1;
       },
       lineWidthUnits: 'pixels',
       lineWidthMinPixels: 0,

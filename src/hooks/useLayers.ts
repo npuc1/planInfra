@@ -2,9 +2,10 @@ import { useMemo } from 'react';
 import { ScatterplotLayer, TextLayer, PathLayer } from '@deck.gl/layers';
 import type { Layer, PickingInfo } from '@deck.gl/core';
 
-import { HUBS } from '../data/hubs';
+import { HUBS, HUB_BY_ID } from '../data/hubs';
 import { REGION_STATES } from '../data/regions';
 import { RAIL_OPERATORS, RAIL_OPERATOR_COLORS, RAIL_OPERATOR_NAMES, type RailSegment } from '../data/railNetwork';
+import type { BasemapId } from '../components/MapView';
 import {
   HUB_TYPE_COLORS,
   type UIState,
@@ -36,10 +37,13 @@ function isHubVisible(hub: Hub, state: UIState): boolean {
 
 // ─── useLayers ────────────────────────────────────────────────────────────────
 
+const LIGHT_BASEMAPS: BasemapId[] = ['light', 'gray'];
+
 export function useLayers(
   state: UIState,
   onRailClick: (operator: string) => void,
   segments: RailSegment[],
+  basemap: BasemapId,
 ): Layer[] {
   return useMemo(() => {
     const visibleHubs = HUBS.filter(h => isHubVisible(h, state));
@@ -122,15 +126,25 @@ export function useLayers(
     const isStateActive = (s: string) =>
       regionStates ? regionStates.includes(s) : (!ss || s === ss);
 
+    const sh = state.selectedHubId;
+    const selectedHubType = sh ? (HUB_BY_ID[sh] as Hub | undefined)?.type : undefined;
+    const hasStaticHubSelected = selectedHubType === 'port' || selectedHubType === 'terminal';
+
     const sharedFill = (h: Hub) => {
       const stateActive = isStateActive(h.state);
-      if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 240 : 80] as RGBA;
-      return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.9 : 0.12);
+      if (h.id === sh) return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.95 : 0.35);
+      const isStaticPeer = h.type === 'port' || h.type === 'terminal';
+      const hubDimmed = hasStaticHubSelected && isStaticPeer;
+      const fillAlpha = hubDimmed ? 0.07 : (stateActive ? 0.9 : 0.12);
+      return withAlpha(HUB_TYPE_COLORS[h.type], fillAlpha);
     };
     const sharedLine = (h: Hub) => {
       const stateActive = isStateActive(h.state);
-      if (h.id === state.selectedHubId) return [255, 255, 255, stateActive ? 255 : 80] as RGBA;
-      return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 0.5 : 0.08);
+      if (h.id === sh) return withAlpha(HUB_TYPE_COLORS[h.type], stateActive ? 1.0 : 0.35);
+      const isStaticPeer = h.type === 'port' || h.type === 'terminal';
+      const hubDimmed = hasStaticHubSelected && isStaticPeer;
+      const lineAlpha = hubDimmed ? 0.22 : (stateActive ? 0.5 : 0.08);
+      return withAlpha(HUB_TYPE_COLORS[h.type], lineAlpha);
     };
     const colorTriggers = [state.selectedHubId, ss, sr2];
 
@@ -181,14 +195,17 @@ export function useLayers(
     );
 
     // ── Labels (ports always; selected hub always) ────────────────────────
+    const labelColor: RGBA = LIGHT_BASEMAPS.includes(basemap)
+      ? [0, 0, 0, 200]
+      : [255, 255, 255, 200];
     layers.push(
       new TextLayer({
         id: 'hub-labels',
-        data: visibleHubs.filter(h => h.type === 'port' || h.id === state.selectedHubId),
+        data: HUBS.filter(h => h.type === 'port' || (h.id === state.selectedHubId && isHubVisible(h, state))),
         getPosition: (h: Hub) => [h.lng, h.lat],
         getText:     (h: Hub) => h.name,
         getSize: 11,
-        getColor: [255, 255, 255, 200] as RGBA,
+        getColor: labelColor,
         getAngle: 0,
         getTextAnchor: 'middle',
         getAlignmentBaseline: 'top',
@@ -197,6 +214,7 @@ export function useLayers(
         fontWeight: '600',
         characterSet: 'auto',
         pickable: false,
+        updateTriggers: { getColor: basemap },
       }),
     );
 
@@ -205,6 +223,6 @@ export function useLayers(
     state.mode, state.selectedHubId, state.selectedState, state.selectedRegion,
     state.selectedRailOperator, state.hubTypeVisibility,
     state.railOperatorVisibility,
-    segments, onRailClick,
+    segments, onRailClick, basemap,
   ]);
 }
